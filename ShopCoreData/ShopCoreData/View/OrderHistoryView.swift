@@ -36,7 +36,7 @@ struct OrderHistoryView: View {
                         Text("Noch keine Bestellungen")
                             .font(.title3)
                             .foregroundColor(.secondary)
-                        Text("Deine erworbenen Kunstwerke erscheinen hier.")
+                        Text("Deine erworbenen Unikate erscheinen hier.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

@@ -49,76 +49,76 @@ struct PersistentStore {
         guard count == 0 else { return }
 
         // Kategorien anlegen
-        let bongs = Category(context: context)
-        bongs.id = UUID()
-        bongs.name = "Bongs"
+        let dunkleSchoko = Category(context: context)
+        dunkleSchoko.id = UUID()
+        dunkleSchoko.name = "Dunkle Schokolade"
 
-        let pfeifen = Category(context: context)
-        pfeifen.id = UUID()
-        pfeifen.name = "Pfeifen"
+        let weisseSchoko = Category(context: context)
+        weisseSchoko.id = UUID()
+        weisseSchoko.name = "Weiße Schokolade"
 
-        let dabRigs = Category(context: context)
-        dabRigs.id = UUID()
-        dabRigs.name = "Dab Rigs"
+        let marmorCat = Category(context: context)
+        marmorCat.id = UUID()
+        marmorCat.name = "Marmor"
 
-        let zubehoer = Category(context: context)
-        zubehoer.id = UUID()
-        zubehoer.name = "Zubehör"
+        let granitCat = Category(context: context)
+        granitCat.id = UUID()
+        granitCat.name = "Granit"
 
         // Produkte anlegen — jedes Stück ein Unikat (quantity = 1)
         // Tuple: (name, price, imageName, description, category, artist, material, height)
         let products: [(String, Double, String, String, Category, String, String, Double)] = [
-            // Bongs
-            ("Nebula Dream", 289.00, "flame",
-             "Handgeblasene Borosilikatglas-Bong mit kosmischem Nebel-Design in Blau- und Violetttönen. Diffusor-Downstem für seidenweichen Durchzug. Signiert vom Künstler.",
-             bongs, "Glaskunst Müller", "Borosilikatglas", 35.0),
+            // Dunkle Schokolade
+            ("Midnight Temptation", 189.00, "flame",
+             "Handgegossene Bong aus 72% Edelkakao-Schokolade. Samtige Oberfläche mit edlem Glanz. Jedes Stück wird in Handarbeit temperiert und geformt.",
+             dunkleSchoko, "Pelczer Manufaktur", "72% Edelkakao", 30.0),
 
-            ("Dragonscale", 349.00, "flame",
-             "Massive Bong mit aufwendiger Schuppenstruktur in schimmerndem Grün-Gold. Jede Schuppe einzeln aufgesetzt. Ice-Catcher integriert.",
-             bongs, "Glaskunst Müller", "Borosilikatglas", 42.0),
+            ("Bitter Eclipse", 229.00, "flame",
+             "Massive Bong aus 85% Zartbitterschokolade mit feinen Kakaonibs-Einschlüssen. Markantes Design mit mondförmigem Mundstück.",
+             dunkleSchoko, "Pelczer Manufaktur", "85% Zartbitter", 35.0),
 
-            ("Coral Reef", 219.00, "flame",
-             "Filigrane Bong inspiriert von Korallenriffen. Organische Formen in Koralle, Türkis und Weiß. Kompaktes Format, ideal für Sammler.",
-             bongs, "Glaskunst Müller", "Borosilikatglas", 28.0),
+            ("Cocoa Serpent", 249.00, "flame",
+             "Spiralförmige Bong aus dunkler Schokolade mit gewundener Schlangenstruktur. Aufwendig von Hand modelliert. Essbare Kunst.",
+             dunkleSchoko, "Pelczer Manufaktur", "70% Grand Cru Kakao", 38.0),
 
-            ("Obsidian Tower", 399.00, "flame",
-             "Mächtige schwarze Bong mit goldenen Einschlüssen. Dreifach-Perkolator für maximale Filtration. Das Flaggschiff der Kollektion.",
-             bongs, "Glaskunst Müller", "Borosilikatglas", 48.0),
+            // Weiße Schokolade
+            ("Ivory Tower", 199.00, "flame",
+             "Elegante Bong aus belgischer weißer Schokolade. Cremig-glatte Oberfläche mit zartem Vanilleduft. Ein Blickfang in jedem Raum.",
+             weisseSchoko, "Pelczer Manufaktur", "Belgische weiße Kuvertüre", 32.0),
 
-            ("Aurora Borealis", 269.00, "flame",
-             "Farbwechselnde Fumed-Glass-Bong, die mit jedem Gebrauch intensivere Farben entwickelt. Nordlicht-Effekt durch Silber- und Gold-Fuming.",
-             bongs, "Glaskunst Müller", "Fumed Glass", 32.0),
+            ("Vanilla Cloud", 169.00, "flame",
+             "Weiche, organische Formen aus weißer Schokolade. Wolkenartiges Design mit Bourbon-Vanille-Aroma. Kompakt und sammelwürdig.",
+             weisseSchoko, "Pelczer Manufaktur", "Weiße Schokolade & Vanille", 25.0),
 
-            // Pfeifen
-            ("Salamander", 89.00, "leaf",
-             "Handgeformte Glaspfeife in Form eines Salamanders. Detailreiche Arbeit mit Millefiori-Augen. Liegt perfekt in der Hand.",
-             pfeifen, "Glaskunst Müller", "Borosilikatglas", 12.0),
+            ("Snow Pearl", 219.00, "flame",
+             "Perlenförmig aufgebaute Bong aus weißer Schokolade mit schimmernden Kakaobutter-Kristallen. Jede Perle einzeln aufgesetzt.",
+             weisseSchoko, "Pelczer Manufaktur", "Kristallisierte Kakaobutter", 28.0),
 
-            ("Moonstone Spoon", 69.00, "leaf",
-             "Elegante Spoon-Pipe mit opakem Mondstein-Effekt. Farbspiel von Silber bis Hellblau. Jedes Stück ein Unikat durch die Fuming-Technik.",
-             pfeifen, "Glaskunst Müller", "Fumed Glass", 10.5),
+            // Marmor
+            ("Carrara Classic", 489.00, "mountain.2",
+             "Aus einem Stück italienischem Carrara-Marmor gemeißelt. Klassisch weiß mit feiner grauer Maserung. Schwer und massiv — ein Lebensbegleiter.",
+             marmorCat, "Pelczer Manufaktur", "Carrara-Marmor", 28.0),
 
-            ("Twisted Flame", 119.00, "leaf",
-             "Spiralförmig gedrehte Pfeife mit flammenrotem Innenleben. Doppelwandig für kühlen Rauch. Aufwendige Inside-Out-Technik.",
-             pfeifen, "Glaskunst Müller", "Borosilikatglas", 14.0),
+            ("Nero Marquina", 549.00, "mountain.2",
+             "Tiefschwarzer spanischer Marmor mit weißen Adern. Polierte Oberfläche, die wie ein Nachthimmel schimmert. Handgeschliffen.",
+             marmorCat, "Pelczer Manufaktur", "Nero Marquina Marmor", 32.0),
 
-            // Dab Rigs
-            ("Micro Reactor", 199.00, "drop",
-             "Kompaktes Dab Rig mit Recycler-Funktion. Wissenschaftlich inspiriertes Design. Optimaler Flavor durch kurze Luftwege.",
-             dabRigs, "Glaskunst Müller", "Borosilikatglas", 18.0),
+            ("Calacatta Gold", 679.00, "mountain.2",
+             "Aus dem edelsten Marmor Italiens — warmweiß mit goldenen Adern. Jedes Stück zeigt ein einzigartiges Naturmuster. Das Flaggschiff.",
+             marmorCat, "Pelczer Manufaktur", "Calacatta Oro Marmor", 30.0),
 
-            ("Jellyfish", 259.00, "drop",
-             "Dab Rig in Quallenform mit leuchtenden UV-reaktiven Tentakeln. Funktionaler Perkolator im Kopf der Qualle.",
-             dabRigs, "Glaskunst Müller", "UV-reaktives Glas", 22.0),
+            // Granit
+            ("Baltic Grey", 389.00, "cube",
+             "Skandinavischer Granit in kühlem Grau mit Glimmer-Einschlüssen. CNC-gefräst und von Hand poliert. Unverwüstlich und zeitlos.",
+             granitCat, "Pelczer Manufaktur", "Skandinavischer Granit", 26.0),
 
-            // Zubehör
-            ("Volcano Bowl", 49.00, "circle.grid.cross",
-             "Handgefertigter Kopf in Vulkanform mit integriertem Glassieb. Passt auf alle 18,8mm Schliffe. Jeder Krater individuell gestaltet.",
-             zubehoer, "Glaskunst Müller", "Borosilikatglas", 5.0),
+            ("Black Galaxy", 449.00, "cube",
+             "Indischer Granit mit goldenen Bronzit-Kristallen, die wie Sterne funkeln. Jede Oberfläche ein Miniatur-Universum.",
+             granitCat, "Pelczer Manufaktur", "Black Galaxy Granit", 30.0),
 
-            ("Helix Downstem", 39.00, "circle.grid.cross",
-             "Spiralförmiger Downstem mit 6-Schlitz-Diffusor. 18,8mm auf 14,5mm Adapter. Erzeugt einen hypnotischen Wirbeleffekt im Wasser.",
-             zubehoer, "Glaskunst Müller", "Borosilikatglas", 13.0),
+            ("Rosa Beta", 419.00, "cube",
+             "Sardischer Granit in warmem Rosa mit schwarzen und weißen Sprenkelungen. Mediterrane Eleganz trifft Funktionalität.",
+             granitCat, "Pelczer Manufaktur", "Rosa Beta Granit", 28.0),
         ]
 
         for (name, price, imageName, desc, category, artist, material, height) in products {
