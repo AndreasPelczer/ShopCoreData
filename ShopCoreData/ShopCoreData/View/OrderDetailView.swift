@@ -48,15 +48,21 @@ struct OrderDetailView: View {
                 }
             }
 
-            Section("Artikel") {
+            Section("Kunstwerke") {
                 ForEach(orderViewModel.orderItems(for: order), id: \.id) { item in
                     HStack {
                         VStack(alignment: .leading) {
                             Text(item.productName ?? "")
                                 .font(.body)
-                            Text("Menge: \(item.quantity)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            if item.quantity == 1 {
+                                Text("Unikat")
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                            } else {
+                                Text("Menge: \(item.quantity)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
 
                         Spacer()

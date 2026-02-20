@@ -36,7 +36,7 @@ struct OrderHistoryView: View {
                         Text("Noch keine Bestellungen")
                             .font(.title3)
                             .foregroundColor(.secondary)
-                        Text("Deine Bestellhistorie erscheint hier.")
+                        Text("Deine erworbenen Kunstwerke erscheinen hier.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -50,7 +50,7 @@ struct OrderHistoryView: View {
                                         .fontWeight(.medium)
 
                                     let itemCount = (order.items as? Set<OrderItem>)?.count ?? 0
-                                    Text("\(itemCount) Artikel")
+                                    Text("\(itemCount) \(itemCount == 1 ? "Stück" : "Stücke")")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }

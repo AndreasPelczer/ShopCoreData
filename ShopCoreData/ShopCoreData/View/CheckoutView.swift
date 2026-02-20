@@ -33,7 +33,7 @@ struct CheckoutView: View {
                         .font(.title2)
                         .fontWeight(.bold)
 
-                    Text("Deine Bestellung wurde erfolgreich aufgegeben.")
+                    Text("Deine Bestellung wurde aufgegeben. Deine Unikate werden sorgfältig verpackt.")
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -47,15 +47,21 @@ struct CheckoutView: View {
             } else {
                 // Bestellübersicht
                 List {
-                    Section("Artikel") {
+                    Section("Kunstwerke") {
                         ForEach(cartViewModel.cartItems, id: \.id) { item in
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(item.product?.name ?? "")
                                         .font(.body)
-                                    Text("Menge: \(item.quantity)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                                    if item.product?.isUnique == true {
+                                        Text("Unikat")
+                                            .font(.caption)
+                                            .foregroundColor(.orange)
+                                    } else {
+                                        Text("Menge: \(item.quantity)")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
 
                                 Spacer()
