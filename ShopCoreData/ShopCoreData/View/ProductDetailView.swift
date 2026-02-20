@@ -12,6 +12,16 @@ struct ProductDetailView: View {
     @ObservedObject var cartViewModel: CartViewModel
     @State private var showAddedFeedback = false
 
+    private var isInCart: Bool {
+        cartViewModel.cartItems.contains(where: { $0.product?.id == product.id })
+    }
+
+    private var canAddToCart: Bool {
+        if product.quantity <= 0 { return false }
+        if product.isUnique && isInCart { return false }
+        return true
+    }
+
     private var currencyFormatter: NumberFormatter {
         let f = NumberFormatter()
         f.numberStyle = .currency
@@ -32,16 +42,29 @@ struct ProductDetailView: View {
                     .cornerRadius(12)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    // Kategorie
-                    if let categoryName = product.category?.name {
-                        Text(categoryName.uppercased())
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(4)
+                    // Kategorie & Unikat-Badge
+                    HStack(spacing: 8) {
+                        if let categoryName = product.category?.name {
+                            Text(categoryName.uppercased())
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color(.systemGray5))
+                                .cornerRadius(4)
+                        }
+
+                        if product.isUnique {
+                            Text("UNIKAT")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.orange)
+                                .cornerRadius(4)
+                        }
                     }
 
                     // Name und Preis
@@ -60,10 +83,60 @@ struct ProductDetailView: View {
                             .fill(product.quantity > 0 ? Color.green : Color.red)
                             .frame(width: 8, height: 8)
                         Text(product.quantity > 0
-                             ? "\(product.quantity) Stück verfügbar"
-                             : "Nicht verfügbar")
+                             ? "Verfügbar"
+                             : "Verkauft")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
+                    }
+
+                    Divider()
+
+                    // Künstler & Details
+                    Text("Details")
+                        .font(.headline)
+
+                    VStack(spacing: 8) {
+                        if let artist = product.artist, !artist.isEmpty {
+                            HStack {
+                                Image(systemName: "paintbrush.pointed")
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 24)
+                                Text("Künstler")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(artist)
+                                    .fontWeight(.medium)
+                            }
+                            .font(.subheadline)
+                        }
+
+                        if let material = product.material, !material.isEmpty {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 24)
+                                Text("Material")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(material)
+                                    .fontWeight(.medium)
+                            }
+                            .font(.subheadline)
+                        }
+
+                        if product.height > 0 {
+                            HStack {
+                                Image(systemName: "ruler")
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 24)
+                                Text("Höhe")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(String(format: "%.0f cm", product.height))
+                                    .fontWeight(.medium)
+                            }
+                            .font(.subheadline)
+                        }
                     }
 
                     Divider()
@@ -90,16 +163,20 @@ struct ProductDetailView: View {
                 }) {
                     HStack {
                         Image(systemName: showAddedFeedback ? "checkmark" : "cart.badge.plus")
-                        Text(showAddedFeedback ? "Hinzugefügt!" : "In den Warenkorb")
+                        Text(showAddedFeedback
+                             ? "Hinzugefügt!"
+                             : isInCart
+                             ? "Bereits im Warenkorb"
+                             : "In den Warenkorb")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(product.quantity > 0 ? Color.accentColor : Color.gray)
+                    .background(canAddToCart ? Color.accentColor : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(12)
                 }
-                .disabled(product.quantity <= 0)
+                .disabled(!canAddToCart)
                 .padding(.horizontal)
             }
             .padding(.vertical)

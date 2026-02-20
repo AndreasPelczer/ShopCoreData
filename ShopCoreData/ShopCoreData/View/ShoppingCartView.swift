@@ -30,7 +30,7 @@ struct ShoppingCartView: View {
                         Text("Dein Warenkorb ist leer")
                             .font(.title3)
                             .foregroundColor(.secondary)
-                        Text("Füge Produkte aus der Produktliste hinzu.")
+                        Text("Entdecke handgefertigte Unikate in der Galerie.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -58,7 +58,7 @@ struct ShoppingCartView: View {
                             Divider()
 
                             HStack {
-                                Text("Gesamt (\(cartViewModel.totalItemCount) Artikel)")
+                                Text("Gesamt (\(cartViewModel.totalItemCount) \(cartViewModel.totalItemCount == 1 ? "Stück" : "Stücke"))")
                                     .font(.body)
                                 Spacer()
                                 Text(currencyFormatter.string(from: NSNumber(value: cartViewModel.totalPrice)) ?? "")
@@ -122,9 +122,21 @@ struct CartItemRow: View {
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.product?.name ?? "")
-                    .font(.body)
-                    .fontWeight(.medium)
+                HStack(spacing: 6) {
+                    Text(item.product?.name ?? "")
+                        .font(.body)
+                        .fontWeight(.medium)
+
+                    if item.product?.isUnique == true {
+                        Text("UNIKAT")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(Color.orange)
+                            .cornerRadius(2)
+                    }
+                }
 
                 let itemTotal = (item.product?.price ?? 0) * Double(item.quantity)
                 Text(currencyFormatter.string(from: NSNumber(value: itemTotal)) ?? "")
@@ -134,25 +146,34 @@ struct CartItemRow: View {
 
             Spacer()
 
-            // Mengensteuerung
-            HStack(spacing: 12) {
+            if item.product?.isUnique == true {
+                // Unikate: nur Entfernen
                 Button(action: onDecrease) {
-                    Image(systemName: "minus.circle")
-                        .font(.title3)
+                    Image(systemName: "trash")
+                        .font(.body)
+                        .foregroundColor(.red)
                 }
+            } else {
+                // Mengensteuerung für Nicht-Unikate
+                HStack(spacing: 12) {
+                    Button(action: onDecrease) {
+                        Image(systemName: "minus.circle")
+                            .font(.title3)
+                    }
 
-                Text("\(item.quantity)")
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .frame(minWidth: 24)
+                    Text("\(item.quantity)")
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .frame(minWidth: 24)
 
-                Button(action: onIncrease) {
-                    Image(systemName: "plus.circle")
-                        .font(.title3)
+                    Button(action: onIncrease) {
+                        Image(systemName: "plus.circle")
+                            .font(.title3)
+                    }
+                    .disabled(item.product?.quantity ?? 0 <= 0)
                 }
-                .disabled(item.product?.quantity ?? 0 <= 0)
+                .foregroundColor(.accentColor)
             }
-            .foregroundColor(.accentColor)
         }
         .padding(.vertical, 4)
     }

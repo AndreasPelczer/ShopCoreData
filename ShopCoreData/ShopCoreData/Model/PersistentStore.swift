@@ -49,47 +49,91 @@ struct PersistentStore {
         guard count == 0 else { return }
 
         // Kategorien anlegen
-        let elektronik = Category(context: context)
-        elektronik.id = UUID()
-        elektronik.name = "Elektronik"
+        let bongs = Category(context: context)
+        bongs.id = UUID()
+        bongs.name = "Bongs"
 
-        let kleidung = Category(context: context)
-        kleidung.id = UUID()
-        kleidung.name = "Kleidung"
+        let pfeifen = Category(context: context)
+        pfeifen.id = UUID()
+        pfeifen.name = "Pfeifen"
 
-        let haushalt = Category(context: context)
-        haushalt.id = UUID()
-        haushalt.name = "Haushalt"
+        let dabRigs = Category(context: context)
+        dabRigs.id = UUID()
+        dabRigs.name = "Dab Rigs"
 
-        let sport = Category(context: context)
-        sport.id = UUID()
-        sport.name = "Sport"
+        let zubehoer = Category(context: context)
+        zubehoer.id = UUID()
+        zubehoer.name = "Zubehör"
 
-        // Produkte anlegen
-        let products: [(String, Double, Int16, String, String, Category)] = [
-            ("Bluetooth Kopfhörer", 49.99, 25, "headphones", "Kabellose Bluetooth 5.0 Kopfhörer mit Noise-Cancelling und 30h Akkulaufzeit.", elektronik),
-            ("USB-C Ladekabel", 12.99, 50, "cable.coaxial", "Schnellladekabel USB-C auf USB-C, 2 Meter, geflochten.", elektronik),
-            ("Smartphone Hülle", 14.99, 40, "iphone", "Stoßfeste Schutzhülle mit transparentem Design.", elektronik),
-            ("LED Schreibtischlampe", 34.99, 15, "lamp.desk", "Dimmbare LED-Lampe mit 5 Helligkeitsstufen und USB-Anschluss.", elektronik),
-            ("T-Shirt Basic", 19.99, 100, "tshirt", "Baumwoll-T-Shirt in verschiedenen Farben, Unisex.", kleidung),
-            ("Winterjacke", 89.99, 20, "cloud.snow", "Warme Winterjacke mit Kapuze, wasserabweisend.", kleidung),
-            ("Sneaker Classic", 59.99, 30, "shoe", "Bequeme Alltagssneaker mit Memory-Foam-Sohle.", kleidung),
-            ("Trinkflasche Edelstahl", 24.99, 35, "waterbottle", "Isolierte Edelstahl-Trinkflasche, 750ml, BPA-frei.", haushalt),
-            ("Küchenwaage Digital", 22.99, 20, "scalemass", "Digitale Küchenwaage mit LCD-Display, max. 5kg.", haushalt),
-            ("Yoga Matte", 29.99, 25, "figure.yoga", "Rutschfeste Yogamatte, 6mm dick, mit Tragegurt.", sport),
-            ("Fitness Tracker", 39.99, 30, "applewatch", "Fitness-Armband mit Herzfrequenzmessung und Schlaftracking.", sport),
-            ("Springseil", 9.99, 45, "figure.jumprope", "Verstellbares Speed-Springseil mit Kugellagern.", sport),
+        // Produkte anlegen — jedes Stück ein Unikat (quantity = 1)
+        // Tuple: (name, price, imageName, description, category, artist, material, height)
+        let products: [(String, Double, String, String, Category, String, String, Double)] = [
+            // Bongs
+            ("Nebula Dream", 289.00, "flame",
+             "Handgeblasene Borosilikatglas-Bong mit kosmischem Nebel-Design in Blau- und Violetttönen. Diffusor-Downstem für seidenweichen Durchzug. Signiert vom Künstler.",
+             bongs, "Glaskunst Müller", "Borosilikatglas", 35.0),
+
+            ("Dragonscale", 349.00, "flame",
+             "Massive Bong mit aufwendiger Schuppenstruktur in schimmerndem Grün-Gold. Jede Schuppe einzeln aufgesetzt. Ice-Catcher integriert.",
+             bongs, "Glaskunst Müller", "Borosilikatglas", 42.0),
+
+            ("Coral Reef", 219.00, "flame",
+             "Filigrane Bong inspiriert von Korallenriffen. Organische Formen in Koralle, Türkis und Weiß. Kompaktes Format, ideal für Sammler.",
+             bongs, "Glaskunst Müller", "Borosilikatglas", 28.0),
+
+            ("Obsidian Tower", 399.00, "flame",
+             "Mächtige schwarze Bong mit goldenen Einschlüssen. Dreifach-Perkolator für maximale Filtration. Das Flaggschiff der Kollektion.",
+             bongs, "Glaskunst Müller", "Borosilikatglas", 48.0),
+
+            ("Aurora Borealis", 269.00, "flame",
+             "Farbwechselnde Fumed-Glass-Bong, die mit jedem Gebrauch intensivere Farben entwickelt. Nordlicht-Effekt durch Silber- und Gold-Fuming.",
+             bongs, "Glaskunst Müller", "Fumed Glass", 32.0),
+
+            // Pfeifen
+            ("Salamander", 89.00, "leaf",
+             "Handgeformte Glaspfeife in Form eines Salamanders. Detailreiche Arbeit mit Millefiori-Augen. Liegt perfekt in der Hand.",
+             pfeifen, "Glaskunst Müller", "Borosilikatglas", 12.0),
+
+            ("Moonstone Spoon", 69.00, "leaf",
+             "Elegante Spoon-Pipe mit opakem Mondstein-Effekt. Farbspiel von Silber bis Hellblau. Jedes Stück ein Unikat durch die Fuming-Technik.",
+             pfeifen, "Glaskunst Müller", "Fumed Glass", 10.5),
+
+            ("Twisted Flame", 119.00, "leaf",
+             "Spiralförmig gedrehte Pfeife mit flammenrotem Innenleben. Doppelwandig für kühlen Rauch. Aufwendige Inside-Out-Technik.",
+             pfeifen, "Glaskunst Müller", "Borosilikatglas", 14.0),
+
+            // Dab Rigs
+            ("Micro Reactor", 199.00, "drop",
+             "Kompaktes Dab Rig mit Recycler-Funktion. Wissenschaftlich inspiriertes Design. Optimaler Flavor durch kurze Luftwege.",
+             dabRigs, "Glaskunst Müller", "Borosilikatglas", 18.0),
+
+            ("Jellyfish", 259.00, "drop",
+             "Dab Rig in Quallenform mit leuchtenden UV-reaktiven Tentakeln. Funktionaler Perkolator im Kopf der Qualle.",
+             dabRigs, "Glaskunst Müller", "UV-reaktives Glas", 22.0),
+
+            // Zubehör
+            ("Volcano Bowl", 49.00, "circle.grid.cross",
+             "Handgefertigter Kopf in Vulkanform mit integriertem Glassieb. Passt auf alle 18,8mm Schliffe. Jeder Krater individuell gestaltet.",
+             zubehoer, "Glaskunst Müller", "Borosilikatglas", 5.0),
+
+            ("Helix Downstem", 39.00, "circle.grid.cross",
+             "Spiralförmiger Downstem mit 6-Schlitz-Diffusor. 18,8mm auf 14,5mm Adapter. Erzeugt einen hypnotischen Wirbeleffekt im Wasser.",
+             zubehoer, "Glaskunst Müller", "Borosilikatglas", 13.0),
         ]
 
-        for (name, price, quantity, imageName, desc, category) in products {
+        for (name, price, imageName, desc, category, artist, material, height) in products {
             let product = Product(context: context)
             product.id = UUID()
             product.name = name
             product.price = price
-            product.quantity = quantity
+            product.quantity = 1 // Unikat — nur 1 Stück
             product.imageName = imageName
             product.productDescription = desc
             product.category = category
+            product.artist = artist
+            product.material = material
+            product.height = height
+            product.isUnique = true
         }
 
         save()

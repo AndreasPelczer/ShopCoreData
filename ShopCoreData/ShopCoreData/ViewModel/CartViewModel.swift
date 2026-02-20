@@ -49,8 +49,15 @@ class CartViewModel: ObservableObject {
     func addToCart(product: Product) {
         guard product.quantity > 0 else { return }
 
+        // Bei Unikaten: nicht doppelt in den Warenkorb
+        if product.isUnique {
+            let alreadyInCart = cartItems.contains(where: { $0.product?.id == product.id })
+            guard !alreadyInCart else { return }
+        }
+
         // Prüfe ob das Produkt schon im Warenkorb ist
         if let existing = cartItems.first(where: { $0.product?.id == product.id }) {
+            guard !product.isUnique else { return }
             existing.quantity += 1
         } else {
             let item = CartItem(context: store.context)
@@ -81,6 +88,8 @@ class CartViewModel: ObservableObject {
 
     func increaseQuantity(cartItem: CartItem) {
         guard let product = cartItem.product, product.quantity > 0 else { return }
+        // Unikate können nicht mehrfach gekauft werden
+        guard !product.isUnique else { return }
 
         cartItem.quantity += 1
         product.quantity -= 1

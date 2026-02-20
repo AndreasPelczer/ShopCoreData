@@ -52,8 +52,8 @@ struct ProductListView: View {
                 }
                 .listStyle(.plain)
             }
-            .navigationTitle("Produkte")
-            .searchable(text: $viewModel.searchText, prompt: "Produkt suchen...")
+            .navigationTitle("Glaskunst Shop")
+            .searchable(text: $viewModel.searchText, prompt: "Kunstwerk suchen...")
             .onAppear {
                 viewModel.fetchProducts()
             }
@@ -104,14 +104,33 @@ struct ProductRow: View {
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(product.name ?? "")
-                    .font(.body)
-                    .fontWeight(.medium)
+                HStack(spacing: 6) {
+                    Text(product.name ?? "")
+                        .font(.body)
+                        .fontWeight(.medium)
 
-                if let categoryName = product.category?.name {
-                    Text(categoryName)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    if product.isUnique {
+                        Text("UNIKAT")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color.orange)
+                            .cornerRadius(3)
+                    }
+                }
+
+                HStack(spacing: 4) {
+                    if let categoryName = product.category?.name {
+                        Text(categoryName)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    if let artist = product.artist, !artist.isEmpty {
+                        Text("· \(artist)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
 
@@ -121,7 +140,7 @@ struct ProductRow: View {
                 Text(currencyFormatter.string(from: NSNumber(value: product.price)) ?? "")
                     .fontWeight(.semibold)
 
-                Text(product.quantity > 0 ? "Verfügbar" : "Ausverkauft")
+                Text(product.quantity > 0 ? "Verfügbar" : "Verkauft")
                     .font(.caption)
                     .foregroundColor(product.quantity > 0 ? .green : .red)
             }

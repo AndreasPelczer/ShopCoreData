@@ -16,8 +16,8 @@ struct ContentView: View {
         TabView {
             ProductListView(viewModel: productViewModel, cartViewModel: cartViewModel)
                 .tabItem {
-                    Image(systemName: "list.bullet")
-                    Text("Produkte")
+                    Image(systemName: "flame")
+                    Text("Galerie")
                 }
 
             ShoppingCartView(cartViewModel: cartViewModel, orderViewModel: orderViewModel)
