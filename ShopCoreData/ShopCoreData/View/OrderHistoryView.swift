@@ -79,6 +79,14 @@ struct OrderHistoryView: View {
             .onAppear {
                 orderViewModel.fetchOrders()
             }
+            .alert("Fehler", isPresented: Binding(
+                get: { orderViewModel.errorMessage != nil },
+                set: { if !$0 { orderViewModel.errorMessage = nil } }
+            )) {
+                Button("OK") { orderViewModel.errorMessage = nil }
+            } message: {
+                Text(orderViewModel.errorMessage ?? "")
+            }
         }
     }
 }

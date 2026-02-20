@@ -13,8 +13,15 @@ struct PersistentStore {
     var context: NSManagedObjectContext { container.viewContext }
     static let shared = PersistentStore()
 
-    init() {
+    init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "ShopData")
+
+        if inMemory {
+            let description = NSPersistentStoreDescription()
+            description.type = NSInMemoryStoreType
+            container.persistentStoreDescriptions = [description]
+        }
+
         container.viewContext.automaticallyMergesChangesFromParent = true
 
         container.loadPersistentStores { _, error in
@@ -24,12 +31,15 @@ struct PersistentStore {
         }
     }
 
-    func save() {
-        guard context.hasChanges else { return }
+    @discardableResult
+    func save() -> Bool {
+        guard context.hasChanges else { return true }
         do {
             try context.save()
+            return true
         } catch let error as NSError {
             NSLog("Unresolved error saving context: \(error), \(error.userInfo)")
+            return false
         }
     }
 

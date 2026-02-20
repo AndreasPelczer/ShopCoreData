@@ -104,9 +104,9 @@ struct CheckoutView: View {
     }
 
     private func placeOrder() {
-        let total = cartViewModel.totalPrice
-        let items = cartViewModel.clearCart()
-        orderViewModel.placeOrder(cartItems: items, totalAmount: total)
+        // Create order BEFORE clearing the cart to avoid accessing deleted managed objects
+        orderViewModel.placeOrder(cartItems: cartViewModel.cartItems, totalAmount: cartViewModel.totalPrice)
+        _ = cartViewModel.clearCart()
         orderPlaced = true
     }
 }

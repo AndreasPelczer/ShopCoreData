@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 class ProductViewModel: ObservableObject {
 
@@ -14,12 +15,22 @@ class ProductViewModel: ObservableObject {
     @Published var categories: [Category] = []
     @Published var selectedCategory: Category?
     @Published var searchText: String = ""
+    @Published var errorMessage: String?
 
-    let store = PersistentStore.shared
+    let store: PersistentStore
+    private var cancellable: AnyCancellable?
 
-    init() {
+    init(store: PersistentStore = .shared) {
+        self.store = store
         fetchCategories()
         fetchProducts()
+
+        // Refresh products when Core Data context saves (e.g. after cart changes)
+        cancellable = NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: store.context)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.fetchProducts()
+            }
     }
 
     var filteredProducts: [Product] {
@@ -44,8 +55,9 @@ class ProductViewModel: ObservableObject {
 
         do {
             products = try store.context.fetch(request)
+            errorMessage = nil
         } catch {
-            print("Fehler beim Laden der Produkte: \(error.localizedDescription)")
+            errorMessage = "Produkte konnten nicht geladen werden: \(error.localizedDescription)"
         }
     }
 
@@ -56,7 +68,7 @@ class ProductViewModel: ObservableObject {
         do {
             categories = try store.context.fetch(request)
         } catch {
-            print("Fehler beim Laden der Kategorien: \(error.localizedDescription)")
+            errorMessage = "Kategorien konnten nicht geladen werden: \(error.localizedDescription)"
         }
     }
 }
