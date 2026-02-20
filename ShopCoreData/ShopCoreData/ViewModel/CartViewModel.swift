@@ -11,10 +11,12 @@ import CoreData
 class CartViewModel: ObservableObject {
 
     @Published var cartItems: [CartItem] = []
+    @Published var errorMessage: String?
 
-    let store = PersistentStore.shared
+    let store: PersistentStore
 
-    init() {
+    init(store: PersistentStore = .shared) {
+        self.store = store
         fetchCartItems()
     }
 
@@ -38,8 +40,9 @@ class CartViewModel: ObservableObject {
 
         do {
             cartItems = try store.context.fetch(request)
+            errorMessage = nil
         } catch {
-            print("Fehler beim Laden des Warenkorbs: \(error.localizedDescription)")
+            errorMessage = "Warenkorb konnte nicht geladen werden: \(error.localizedDescription)"
         }
     }
 
@@ -59,7 +62,9 @@ class CartViewModel: ObservableObject {
         // Lagerbestand reduzieren
         product.quantity -= 1
 
-        store.save()
+        if !store.save() {
+            errorMessage = "Produkt konnte nicht zum Warenkorb hinzugefügt werden."
+        }
         fetchCartItems()
     }
 

@@ -94,6 +94,14 @@ struct ShoppingCartView: View {
             .onAppear {
                 cartViewModel.fetchCartItems()
             }
+            .alert("Fehler", isPresented: Binding(
+                get: { cartViewModel.errorMessage != nil },
+                set: { if !$0 { cartViewModel.errorMessage = nil } }
+            )) {
+                Button("OK") { cartViewModel.errorMessage = nil }
+            } message: {
+                Text(cartViewModel.errorMessage ?? "")
+            }
         }
     }
 }

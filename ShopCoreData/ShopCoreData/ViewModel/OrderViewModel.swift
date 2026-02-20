@@ -11,10 +11,12 @@ import CoreData
 class OrderViewModel: ObservableObject {
 
     @Published var orders: [Order] = []
+    @Published var errorMessage: String?
 
-    let store = PersistentStore.shared
+    let store: PersistentStore
 
-    init() {
+    init(store: PersistentStore = .shared) {
+        self.store = store
         fetchOrders()
     }
 
@@ -24,8 +26,9 @@ class OrderViewModel: ObservableObject {
 
         do {
             orders = try store.context.fetch(request)
+            errorMessage = nil
         } catch {
-            print("Fehler beim Laden der Bestellungen: \(error.localizedDescription)")
+            errorMessage = "Bestellungen konnten nicht geladen werden: \(error.localizedDescription)"
         }
     }
 
@@ -45,7 +48,9 @@ class OrderViewModel: ObservableObject {
             orderItem.order = order
         }
 
-        store.save()
+        if !store.save() {
+            errorMessage = "Bestellung konnte nicht gespeichert werden."
+        }
         fetchOrders()
     }
 
