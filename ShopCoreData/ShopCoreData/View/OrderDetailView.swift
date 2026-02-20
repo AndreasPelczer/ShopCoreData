@@ -48,7 +48,7 @@ struct OrderDetailView: View {
                 }
             }
 
-            Section("Kunstwerke") {
+            Section("Produkte") {
                 ForEach(orderViewModel.orderItems(for: order), id: \.id) { item in
                     HStack {
                         VStack(alignment: .leading) {

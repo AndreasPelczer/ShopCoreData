@@ -30,7 +30,7 @@ struct ShoppingCartView: View {
                         Text("Dein Warenkorb ist leer")
                             .font(.title3)
                             .foregroundColor(.secondary)
-                        Text("Entdecke handgefertigte Unikate in der Galerie.")
+                        Text("Entdecke einzigartige Bongs in der Galerie.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

@@ -52,8 +52,8 @@ struct ProductListView: View {
                 }
                 .listStyle(.plain)
             }
-            .navigationTitle("Glaskunst Shop")
-            .searchable(text: $viewModel.searchText, prompt: "Kunstwerk suchen...")
+            .navigationTitle("Pelczer Bongs")
+            .searchable(text: $viewModel.searchText, prompt: "Produkt suchen...")
             .onAppear {
                 viewModel.fetchProducts()
             }

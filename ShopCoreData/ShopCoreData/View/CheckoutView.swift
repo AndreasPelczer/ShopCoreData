@@ -33,7 +33,7 @@ struct CheckoutView: View {
                         .font(.title2)
                         .fontWeight(.bold)
 
-                    Text("Deine Bestellung wurde aufgegeben. Deine Unikate werden sorgfältig verpackt.")
+                    Text("Deine Bestellung wurde aufgegeben. Dein Unikat wird sorgfältig verpackt.")
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -47,7 +47,7 @@ struct CheckoutView: View {
             } else {
                 // Bestellübersicht
                 List {
-                    Section("Kunstwerke") {
+                    Section("Produkte") {
                         ForEach(cartViewModel.cartItems, id: \.id) { item in
                             HStack {
                                 VStack(alignment: .leading) {

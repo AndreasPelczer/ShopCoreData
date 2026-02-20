@@ -91,17 +91,17 @@ struct ProductDetailView: View {
 
                     Divider()
 
-                    // Künstler & Details
+                    // Hersteller & Details
                     Text("Details")
                         .font(.headline)
 
                     VStack(spacing: 8) {
                         if let artist = product.artist, !artist.isEmpty {
                             HStack {
-                                Image(systemName: "paintbrush.pointed")
+                                Image(systemName: "hammer")
                                     .foregroundColor(.accentColor)
                                     .frame(width: 24)
-                                Text("Künstler")
+                                Text("Hersteller")
                                     .foregroundColor(.secondary)
                                 Spacer()
                                 Text(artist)
