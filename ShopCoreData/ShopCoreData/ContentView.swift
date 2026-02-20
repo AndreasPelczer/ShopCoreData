@@ -8,25 +8,33 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var viewModel = ProductViewModel()
+    @StateObject var productViewModel = ProductViewModel()
+    @StateObject var cartViewModel = CartViewModel()
+    @StateObject var orderViewModel = OrderViewModel()
 
     var body: some View {
         TabView {
-            ProductListView(viewModel: viewModel)
+            ProductListView(viewModel: productViewModel, cartViewModel: cartViewModel)
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text("Produkte")
                 }
 
-            ShoppingCartView(viewModel: viewModel)
+            ShoppingCartView(cartViewModel: cartViewModel, orderViewModel: orderViewModel)
                 .tabItem {
                     Image(systemName: "cart")
                     Text("Warenkorb")
                 }
+                .badge(cartViewModel.totalItemCount)
+
+            OrderHistoryView(orderViewModel: orderViewModel)
+                .tabItem {
+                    Image(systemName: "clock.arrow.circlepath")
+                    Text("Bestellungen")
+                }
         }
     }
 }
-
 
 #Preview {
     ContentView()

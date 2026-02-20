@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct ShopCoreDataApp: App {
+    init() {
+        PersistentStore.shared.seedDataIfNeeded()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
