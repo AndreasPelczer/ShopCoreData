@@ -10,6 +10,7 @@ import SwiftUI
 struct ProductDetailView: View {
     let product: Product
     @ObservedObject var cartViewModel: CartViewModel
+    @ObservedObject var productViewModel: ProductViewModel
     @State private var showAddedFeedback = false
 
     private var isInCart: Bool {
@@ -32,14 +33,8 @@ struct ProductDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Produktbild (SF Symbol als Platzhalter)
-                Image(systemName: product.imageName ?? "shippingbox")
-                    .font(.system(size: 80))
-                    .foregroundColor(.smokyQuartz)
-                    .frame(height: 200)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.galleryPanel)
-                    .cornerRadius(12)
+                // Produktbilder-Galerie
+                ProductImageGalleryView(product: product)
 
                 VStack(alignment: .leading, spacing: 12) {
                     // Kategorie & Unikat-Badge
@@ -196,5 +191,13 @@ struct ProductDetailView: View {
         .background(Color.galleryBackground)
         .navigationTitle(product.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: AdminImageUploadView(product: product, viewModel: productViewModel)) {
+                    Image(systemName: "photo.badge.plus")
+                        .foregroundColor(.smokyQuartz)
+                }
+            }
+        }
     }
 }
