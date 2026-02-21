@@ -20,6 +20,12 @@ struct PersistentStore {
             let description = NSPersistentStoreDescription()
             description.type = NSInMemoryStoreType
             container.persistentStoreDescriptions = [description]
+        } else {
+            // Lightweight Migration aktivieren — nötig für Schema-Änderungen (z.B. neue ProductImage Entity)
+            let description = container.persistentStoreDescriptions.first ?? NSPersistentStoreDescription()
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+            container.persistentStoreDescriptions = [description]
         }
 
         container.viewContext.automaticallyMergesChangesFromParent = true

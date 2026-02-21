@@ -20,6 +20,13 @@ struct ContentView: View {
                     Text("Galerie")
                 }
 
+            FavoritesView(viewModel: productViewModel, cartViewModel: cartViewModel)
+                .tabItem {
+                    Image(systemName: "heart")
+                    Text("Wunschliste")
+                }
+                .badge(productViewModel.favoriteProducts.count)
+
             ShoppingCartView(cartViewModel: cartViewModel, orderViewModel: orderViewModel)
                 .tabItem {
                     Image(systemName: "cart")
@@ -31,6 +38,12 @@ struct ContentView: View {
                 .tabItem {
                     Image(systemName: "clock.arrow.circlepath")
                     Text("Bestellungen")
+                }
+
+            AdminDashboardView(productViewModel: productViewModel)
+                .tabItem {
+                    Image(systemName: "paintbrush.pointed")
+                    Text("Atelier")
                 }
         }
         .tint(.smokyQuartz)
