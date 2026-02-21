@@ -25,6 +25,8 @@
 		CA0000132B46E0010055AC3D /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA00000D2B46E0010055AC3D /* CheckoutView.swift */; };
 		CA0000142B46E0010055AC3D /* OrderHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA00000E2B46E0010055AC3D /* OrderHistoryView.swift */; };
 		CA0000152B46E0010055AC3D /* OrderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA00000F2B46E0010055AC3D /* OrderDetailView.swift */; };
+		CA0000182B46E0010055AC3D /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000162B46E0010055AC3D /* ColorTheme.swift */; };
+		CA0000192B46E0010055AC3D /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000172B46E0010055AC3D /* Typography.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 		CA00000D2B46E0010055AC3D /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
 		CA00000E2B46E0010055AC3D /* OrderHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderHistoryView.swift; sourceTree = "<group>"; };
 		CA00000F2B46E0010055AC3D /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
+		CA0000162B46E0010055AC3D /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		CA0000172B46E0010055AC3D /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +178,8 @@
 		1A5B910D2B46CEBB0055AC3D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				CA0000162B46E0010055AC3D /* ColorTheme.swift */,
+				CA0000172B46E0010055AC3D /* Typography.swift */,
 				1A5B910E2B46CED70055AC3D /* ProductListView.swift */,
 				1A5B91102B46CF070055AC3D /* ShoppingCartView.swift */,
 				CA00000C2B46E0010055AC3D /* ProductDetailView.swift */,
@@ -327,6 +333,8 @@
 				CA0000132B46E0010055AC3D /* CheckoutView.swift in Sources */,
 				CA0000142B46E0010055AC3D /* OrderHistoryView.swift in Sources */,
 				CA0000152B46E0010055AC3D /* OrderDetailView.swift in Sources */,
+				CA0000182B46E0010055AC3D /* ColorTheme.swift in Sources */,
+				CA0000192B46E0010055AC3D /* Typography.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
