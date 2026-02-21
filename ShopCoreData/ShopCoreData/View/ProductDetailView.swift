@@ -24,6 +24,24 @@ struct ProductDetailView: View {
         return true
     }
 
+    private var availabilityText: String {
+        if product.quantity > 0 { return "Verfügbar" }
+        if product.isUnique {
+            let hasImages = (product.images as? Set<ProductImage>)?.isEmpty == false
+            return hasImages ? "Verkauft" : "Nächstes Exemplar in Vorbereitung"
+        }
+        return "Verkauft"
+    }
+
+    private var availabilityColor: Color {
+        if product.quantity > 0 { return .galleryAvailable }
+        if product.isUnique {
+            let hasImages = (product.images as? Set<ProductImage>)?.isEmpty == false
+            return hasImages ? .gallerySold : .mutedAmber
+        }
+        return .gallerySold
+    }
+
     private var currencyFormatter: NumberFormatter {
         let f = NumberFormatter()
         f.numberStyle = .currency
@@ -82,11 +100,9 @@ struct ProductDetailView: View {
                     // Verfügbarkeit
                     HStack {
                         Circle()
-                            .fill(product.quantity > 0 ? Color.galleryAvailable : Color.gallerySold)
+                            .fill(availabilityColor)
                             .frame(width: 8, height: 8)
-                        Text(product.quantity > 0
-                             ? "Verfügbar"
-                             : "Verkauft")
+                        Text(availabilityText)
                             .font(.gallerySubheadline)
                             .foregroundColor(.gallerySecondaryText)
                     }

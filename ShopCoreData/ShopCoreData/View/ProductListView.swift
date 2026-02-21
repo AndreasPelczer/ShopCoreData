@@ -146,11 +146,30 @@ struct ProductRow: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.softWhite)
 
-                Text(product.quantity > 0 ? "Verfügbar" : "Verkauft")
+                Text(productAvailabilityText(product))
                     .font(.galleryCaption)
-                    .foregroundColor(product.quantity > 0 ? .galleryAvailable : .gallerySold)
+                    .foregroundColor(productAvailabilityColor(product))
             }
         }
         .padding(.vertical, 4)
+    }
+
+    private func productAvailabilityText(_ product: Product) -> String {
+        if product.quantity > 0 { return "Verfügbar" }
+        // Unikat verkauft + Fotos gelöscht → Künstler bereitet nächstes vor
+        if product.isUnique {
+            let hasImages = (product.images as? Set<ProductImage>)?.isEmpty == false
+            return hasImages ? "Verkauft" : "In Vorbereitung"
+        }
+        return "Verkauft"
+    }
+
+    private func productAvailabilityColor(_ product: Product) -> Color {
+        if product.quantity > 0 { return .galleryAvailable }
+        if product.isUnique {
+            let hasImages = (product.images as? Set<ProductImage>)?.isEmpty == false
+            return hasImages ? .gallerySold : .mutedAmber
+        }
+        return .gallerySold
     }
 }
