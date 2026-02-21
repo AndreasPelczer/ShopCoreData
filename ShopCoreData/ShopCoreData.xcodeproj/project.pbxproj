@@ -34,6 +34,7 @@
 		CB0000092C46E0010055AC3D /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000A2C46E0010055AC3D /* CloudKitManager.swift */; };
 		CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */; };
 		CB00000D2C46E0010055AC3D /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000E2C46E0010055AC3D /* FavoritesView.swift */; };
+		CB00000F2C46E0010055AC3D /* WriteReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000102C46E0010055AC3D /* WriteReviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		CB00000A2C46E0010055AC3D /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 		CB00000E2C46E0010055AC3D /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		CB0000102C46E0010055AC3D /* WriteReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteReviewView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +209,7 @@
 				CB0000042C46E0010055AC3D /* ProductImageGalleryView.swift */,
 				CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */,
 				CB00000E2C46E0010055AC3D /* FavoritesView.swift */,
+				CB0000102C46E0010055AC3D /* WriteReviewView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -363,6 +366,7 @@
 				CB0000092C46E0010055AC3D /* CloudKitManager.swift in Sources */,
 				CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */,
 				CB00000D2C46E0010055AC3D /* FavoritesView.swift in Sources */,
+				CB00000F2C46E0010055AC3D /* WriteReviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
