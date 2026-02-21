@@ -41,7 +41,9 @@ class OrderViewModel: ObservableObject {
         phone: String? = nil,
         street: String = "",
         zip: String = "",
-        city: String = ""
+        city: String = "",
+        couponCode: String? = nil,
+        discountAmount: Double = 0
     ) {
         let order = Order(context: store.context)
         order.id = UUID()
@@ -59,6 +61,10 @@ class OrderViewModel: ObservableObject {
         order.zip = zip
         order.city = city
 
+        // Gutschein
+        order.couponCode = couponCode
+        order.discountAmount = discountAmount
+
         for cartItem in cartItems {
             let orderItem = OrderItem(context: store.context)
             orderItem.id = UUID()
@@ -72,6 +78,40 @@ class OrderViewModel: ObservableObject {
             errorMessage = "Bestellung konnte nicht gespeichert werden."
         }
         fetchOrders()
+    }
+
+    // MARK: - Versandverfolgung
+
+    func updateTracking(for order: Order, carrier: String, trackingNumber: String) {
+        order.shippingCarrier = carrier
+        order.trackingNumber = trackingNumber
+        if order.status == "Bestellt" {
+            order.status = "Versendet"
+        }
+        if !store.save() {
+            errorMessage = "Tracking konnte nicht gespeichert werden."
+        }
+        fetchOrders()
+    }
+
+    func trackingURL(for order: Order) -> URL? {
+        guard let number = order.trackingNumber, !number.isEmpty,
+              let carrier = order.shippingCarrier else { return nil }
+
+        switch carrier.lowercased() {
+        case "dhl":
+            return URL(string: "https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode=\(number)")
+        case "dpd":
+            return URL(string: "https://tracking.dpd.de/status/de_DE/parcel/\(number)")
+        case "hermes":
+            return URL(string: "https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#\(number)")
+        case "gls":
+            return URL(string: "https://gls-group.com/DE/de/paketverfolgung?match=\(number)")
+        case "ups":
+            return URL(string: "https://www.ups.com/track?tracknum=\(number)&loc=de_DE")
+        default:
+            return nil
+        }
     }
 
     func orderItems(for order: Order) -> [OrderItem] {

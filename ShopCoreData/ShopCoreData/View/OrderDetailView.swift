@@ -69,6 +69,62 @@ struct OrderDetailView: View {
                 }
             }
 
+            // Versandverfolgung
+            if let trackingNumber = order.trackingNumber, !trackingNumber.isEmpty {
+                Section("Versandverfolgung") {
+                    HStack {
+                        Text("Dienstleister")
+                            .foregroundColor(.gallerySecondaryText)
+                        Spacer()
+                        Text(order.shippingCarrier ?? "")
+                            .foregroundColor(.softWhite)
+                    }
+                    .listRowBackground(Color.galleryPanel)
+
+                    HStack {
+                        Text("Sendungsnummer")
+                            .foregroundColor(.gallerySecondaryText)
+                        Spacer()
+                        Text(trackingNumber)
+                            .font(.galleryMono)
+                            .foregroundColor(.softWhite)
+                    }
+                    .listRowBackground(Color.galleryPanel)
+
+                    if let url = orderViewModel.trackingURL(for: order) {
+                        Link(destination: url) {
+                            HStack {
+                                Image(systemName: "safari")
+                                Text("Sendung verfolgen")
+                                    .fontWeight(.medium)
+                                Spacer()
+                                Image(systemName: "arrow.up.right.square")
+                            }
+                            .foregroundColor(.smokyQuartz)
+                        }
+                        .listRowBackground(Color.galleryPanel)
+                    }
+                }
+            }
+
+            // Gutschein-Info
+            if let couponCode = order.couponCode, !couponCode.isEmpty {
+                Section("Gutschein") {
+                    HStack {
+                        HStack(spacing: 6) {
+                            Image(systemName: "ticket")
+                            Text(couponCode)
+                                .font(.galleryMono)
+                        }
+                        .foregroundColor(.galleryAvailable)
+                        Spacer()
+                        Text("- \(currencyFormatter.string(from: NSNumber(value: order.discountAmount)) ?? "")")
+                            .foregroundColor(.galleryAvailable)
+                    }
+                    .listRowBackground(Color.galleryPanel)
+                }
+            }
+
             // Lieferadresse (nur anzeigen wenn vorhanden)
             if let firstName = order.firstName, !firstName.isEmpty {
                 Section("Lieferadresse") {
