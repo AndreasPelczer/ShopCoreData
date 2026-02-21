@@ -32,27 +32,30 @@ struct OrderHistoryView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.system(size: 60))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.gallerySecondaryText)
                         Text("Noch keine Bestellungen")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
+                            .font(.gallerySubtitle)
+                            .foregroundColor(.gallerySecondaryText)
                         Text("Deine erworbenen Unikate erscheinen hier.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.gallerySubheadline)
+                            .foregroundColor(.gallerySecondaryText)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.galleryBackground)
                 } else {
                     List(orderViewModel.orders, id: \.id) { order in
                         NavigationLink(destination: OrderDetailView(order: order, orderViewModel: orderViewModel)) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(dateFormatter.string(from: order.date ?? Date()))
-                                        .font(.body)
+                                        .font(.galleryBody)
                                         .fontWeight(.medium)
+                                        .foregroundColor(.softWhite)
 
                                     let itemCount = (order.items as? Set<OrderItem>)?.count ?? 0
                                     Text("\(itemCount) \(itemCount == 1 ? "Stück" : "Stücke")")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .font(.galleryCaption)
+                                        .foregroundColor(.gallerySecondaryText)
                                 }
 
                                 Spacer()
@@ -60,21 +63,27 @@ struct OrderHistoryView: View {
                                 VStack(alignment: .trailing, spacing: 4) {
                                     Text(currencyFormatter.string(from: NSNumber(value: order.totalAmount)) ?? "")
                                         .fontWeight(.semibold)
+                                        .foregroundColor(.softWhite)
 
                                     Text(order.status ?? "")
-                                        .font(.caption)
+                                        .font(.galleryCaption)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 2)
-                                        .background(Color.green.opacity(0.2))
-                                        .foregroundColor(.green)
+                                        .background(Color.oxidCopper.opacity(0.2))
+                                        .foregroundColor(.oxidCopper)
                                         .cornerRadius(4)
                                 }
                             }
                             .padding(.vertical, 4)
                         }
+                        .listRowBackground(Color.galleryBackground)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.galleryBackground)
                 }
             }
+            .background(Color.galleryBackground)
             .navigationTitle("Bestellungen")
             .onAppear {
                 orderViewModel.fetchOrders()

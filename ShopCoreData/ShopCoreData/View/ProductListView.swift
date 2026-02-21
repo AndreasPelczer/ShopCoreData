@@ -43,15 +43,20 @@ struct ProductListView: View {
                     .padding(.horizontal)
                     .padding(.vertical, 8)
                 }
+                .background(Color.galleryBackground)
 
                 // Produktliste
                 List(viewModel.filteredProducts, id: \.id) { product in
                     NavigationLink(destination: ProductDetailView(product: product, cartViewModel: cartViewModel)) {
                         ProductRow(product: product, currencyFormatter: currencyFormatter)
                     }
+                    .listRowBackground(Color.galleryBackground)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.galleryBackground)
             }
+            .background(Color.galleryBackground)
             .navigationTitle("Pelczer Bongs")
             .searchable(text: $viewModel.searchText, prompt: "Produkt suchen...")
             .onAppear {
@@ -79,13 +84,17 @@ struct CategoryChip: View {
     var body: some View {
         Button(action: action) {
             Text(name)
-                .font(.subheadline)
+                .font(.galleryCaption)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(.systemGray5))
-                .foregroundColor(isSelected ? .white : .primary)
+                .background(isSelected ? Color.smokyQuartz : Color.galleryChipBackground)
+                .foregroundColor(isSelected ? .galleryBackground : .gallerySecondaryText)
                 .cornerRadius(16)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(isSelected ? Color.clear : Color.galleryDivider, lineWidth: 1)
+                )
         }
     }
 }
@@ -98,24 +107,25 @@ struct ProductRow: View {
         HStack(spacing: 12) {
             Image(systemName: product.imageName ?? "shippingbox")
                 .font(.title2)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.smokyQuartz)
                 .frame(width: 50, height: 50)
-                .background(Color(.systemGray6))
+                .background(Color.galleryPanel)
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
                     Text(product.name ?? "")
-                        .font(.body)
+                        .font(.galleryBody)
                         .fontWeight(.medium)
+                        .foregroundColor(.softWhite)
 
                     if product.isUnique {
                         Text("UNIKAT")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundColor(.white)
+                            .font(.galleryBadge)
+                            .foregroundColor(.galleryBackground)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
-                            .background(Color.orange)
+                            .background(Color.mutedAmber)
                             .cornerRadius(3)
                     }
                 }
@@ -123,13 +133,13 @@ struct ProductRow: View {
                 HStack(spacing: 4) {
                     if let categoryName = product.category?.name {
                         Text(categoryName)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(.galleryCaption)
+                            .foregroundColor(.gallerySecondaryText)
                     }
                     if let artist = product.artist, !artist.isEmpty {
                         Text("· \(artist)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(.galleryCaption)
+                            .foregroundColor(.gallerySecondaryText)
                     }
                 }
             }
@@ -139,10 +149,11 @@ struct ProductRow: View {
             VStack(alignment: .trailing, spacing: 4) {
                 Text(currencyFormatter.string(from: NSNumber(value: product.price)) ?? "")
                     .fontWeight(.semibold)
+                    .foregroundColor(.softWhite)
 
                 Text(product.quantity > 0 ? "Verfügbar" : "Verkauft")
-                    .font(.caption)
-                    .foregroundColor(product.quantity > 0 ? .green : .red)
+                    .font(.galleryCaption)
+                    .foregroundColor(product.quantity > 0 ? .galleryAvailable : .gallerySold)
             }
         }
         .padding(.vertical, 4)

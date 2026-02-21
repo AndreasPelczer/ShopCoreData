@@ -35,10 +35,10 @@ struct ProductDetailView: View {
                 // Produktbild (SF Symbol als Platzhalter)
                 Image(systemName: product.imageName ?? "shippingbox")
                     .font(.system(size: 80))
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.smokyQuartz)
                     .frame(height: 200)
                     .frame(maxWidth: .infinity)
-                    .background(Color(.systemGray6))
+                    .background(Color.galleryPanel)
                     .cornerRadius(12)
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -46,108 +46,120 @@ struct ProductDetailView: View {
                     HStack(spacing: 8) {
                         if let categoryName = product.category?.name {
                             Text(categoryName.uppercased())
-                                .font(.caption)
+                                .font(.galleryCaption)
                                 .fontWeight(.semibold)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gallerySecondaryText)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color(.systemGray5))
+                                .background(Color.galleryChipBackground)
                                 .cornerRadius(4)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(Color.galleryDivider, lineWidth: 1)
+                                )
                         }
 
                         if product.isUnique {
                             Text("UNIKAT")
-                                .font(.caption)
+                                .font(.galleryBadge)
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
+                                .foregroundColor(.galleryBackground)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color.orange)
+                                .background(Color.mutedAmber)
                                 .cornerRadius(4)
                         }
                     }
 
                     // Name und Preis
                     Text(product.name ?? "")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.galleryTitle)
+                        .foregroundColor(.softWhite)
 
                     Text(currencyFormatter.string(from: NSNumber(value: product.price)) ?? "")
-                        .font(.title3)
-                        .foregroundColor(.accentColor)
-                        .fontWeight(.semibold)
+                        .font(.gallerySubtitle)
+                        .foregroundColor(.smokyQuartz)
 
                     // Verfügbarkeit
                     HStack {
                         Circle()
-                            .fill(product.quantity > 0 ? Color.green : Color.red)
+                            .fill(product.quantity > 0 ? Color.galleryAvailable : Color.gallerySold)
                             .frame(width: 8, height: 8)
                         Text(product.quantity > 0
                              ? "Verfügbar"
                              : "Verkauft")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.gallerySubheadline)
+                            .foregroundColor(.gallerySecondaryText)
                     }
 
-                    Divider()
+                    Rectangle()
+                        .fill(Color.galleryDivider)
+                        .frame(height: 1)
 
                     // Hersteller & Details
                     Text("Details")
-                        .font(.headline)
+                        .font(.gallerySubtitle)
+                        .foregroundColor(.softWhite)
 
                     VStack(spacing: 8) {
                         if let artist = product.artist, !artist.isEmpty {
                             HStack {
                                 Image(systemName: "hammer")
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.oxidCopper)
                                     .frame(width: 24)
                                 Text("Hersteller")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gallerySecondaryText)
                                 Spacer()
                                 Text(artist)
                                     .fontWeight(.medium)
+                                    .foregroundColor(.softWhite)
                             }
-                            .font(.subheadline)
+                            .font(.galleryMono)
                         }
 
                         if let material = product.material, !material.isEmpty {
                             HStack {
                                 Image(systemName: "sparkles")
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.oxidCopper)
                                     .frame(width: 24)
                                 Text("Material")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gallerySecondaryText)
                                 Spacer()
                                 Text(material)
                                     .fontWeight(.medium)
+                                    .foregroundColor(.softWhite)
                             }
-                            .font(.subheadline)
+                            .font(.galleryMono)
                         }
 
                         if product.height > 0 {
                             HStack {
                                 Image(systemName: "ruler")
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.oxidCopper)
                                     .frame(width: 24)
                                 Text("Höhe")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gallerySecondaryText)
                                 Spacer()
                                 Text(String(format: "%.0f cm", product.height))
                                     .fontWeight(.medium)
+                                    .foregroundColor(.softWhite)
                             }
-                            .font(.subheadline)
+                            .font(.galleryMono)
                         }
                     }
 
-                    Divider()
+                    Rectangle()
+                        .fill(Color.galleryDivider)
+                        .frame(height: 1)
 
                     // Beschreibung
                     Text("Beschreibung")
-                        .font(.headline)
+                        .font(.gallerySubtitle)
+                        .foregroundColor(.softWhite)
 
                     Text(product.productDescription ?? "Keine Beschreibung verfügbar.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                        .font(.galleryBody)
+                        .foregroundColor(.gallerySecondaryText)
                 }
                 .padding(.horizontal)
 
@@ -172,8 +184,8 @@ struct ProductDetailView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(canAddToCart ? Color.accentColor : Color.gray)
-                    .foregroundColor(.white)
+                    .background(canAddToCart ? Color.smokyQuartz : Color.gallerySecondaryText.opacity(0.3))
+                    .foregroundColor(canAddToCart ? .galleryBackground : .gallerySecondaryText)
                     .cornerRadius(12)
                 }
                 .disabled(!canAddToCart)
@@ -181,6 +193,7 @@ struct ProductDetailView: View {
             }
             .padding(.vertical)
         }
+        .background(Color.galleryBackground)
         .navigationTitle(product.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
     }
