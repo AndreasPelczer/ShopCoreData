@@ -51,6 +51,49 @@ struct OrderDetailView: View {
                         .cornerRadius(4)
                 }
                 .listRowBackground(Color.galleryPanel)
+
+                if let paymentStatus = order.paymentStatus, !paymentStatus.isEmpty {
+                    HStack {
+                        Text("Zahlung")
+                            .foregroundColor(.gallerySecondaryText)
+                        Spacer()
+                        Text(paymentStatus)
+                            .font(.galleryCaption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(paymentStatus == "Bezahlt" ? Color.galleryAvailable.opacity(0.2) : Color.mutedAmber.opacity(0.2))
+                            .foregroundColor(paymentStatus == "Bezahlt" ? .galleryAvailable : .mutedAmber)
+                            .cornerRadius(4)
+                    }
+                    .listRowBackground(Color.galleryPanel)
+                }
+            }
+
+            // Lieferadresse (nur anzeigen wenn vorhanden)
+            if let firstName = order.firstName, !firstName.isEmpty {
+                Section("Lieferadresse") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(firstName) \(order.lastName ?? "")")
+                            .fontWeight(.medium)
+                            .foregroundColor(.softWhite)
+                        if let street = order.street {
+                            Text(street)
+                                .foregroundColor(.gallerySecondaryText)
+                        }
+                        Text("\(order.zip ?? "") \(order.city ?? "")")
+                            .foregroundColor(.gallerySecondaryText)
+                        if let email = order.email {
+                            Text(email)
+                                .foregroundColor(.smokyQuartz)
+                        }
+                        if let phone = order.phone, !phone.isEmpty {
+                            Text(phone)
+                                .foregroundColor(.gallerySecondaryText)
+                        }
+                    }
+                    .font(.galleryBody)
+                    .listRowBackground(Color.galleryPanel)
+                }
             }
 
             Section("Produkte") {

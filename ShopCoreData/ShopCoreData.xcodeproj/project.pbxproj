@@ -35,6 +35,7 @@
 		CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */; };
 		CB00000D2C46E0010055AC3D /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000E2C46E0010055AC3D /* FavoritesView.swift */; };
 		CB00000F2C46E0010055AC3D /* WriteReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000102C46E0010055AC3D /* WriteReviewView.swift */; };
+		CB0000112C46E0010055AC3D /* StripeCheckoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000122C46E0010055AC3D /* StripeCheckoutManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,7 @@
 		CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 		CB00000E2C46E0010055AC3D /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		CB0000102C46E0010055AC3D /* WriteReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteReviewView.swift; sourceTree = "<group>"; };
+		CB0000122C46E0010055AC3D /* StripeCheckoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeCheckoutManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +181,7 @@
 				1A5B911C2B46D77D0055AC3D /* PersistentStore.swift */,
 				CB0000012C46E0010055AC3D /* ImageStorageManager.swift */,
 				CB00000A2C46E0010055AC3D /* CloudKitManager.swift */,
+				CB0000122C46E0010055AC3D /* StripeCheckoutManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -367,6 +370,7 @@
 				CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */,
 				CB00000D2C46E0010055AC3D /* FavoritesView.swift in Sources */,
 				CB00000F2C46E0010055AC3D /* WriteReviewView.swift in Sources */,
+				CB0000112C46E0010055AC3D /* StripeCheckoutManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

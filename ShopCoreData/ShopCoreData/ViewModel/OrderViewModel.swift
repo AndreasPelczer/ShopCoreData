@@ -32,12 +32,32 @@ class OrderViewModel: ObservableObject {
         }
     }
 
-    func placeOrder(cartItems: [CartItem], totalAmount: Double) {
+    func placeOrder(
+        cartItems: [CartItem],
+        totalAmount: Double,
+        firstName: String = "",
+        lastName: String = "",
+        email: String = "",
+        phone: String? = nil,
+        street: String = "",
+        zip: String = "",
+        city: String = ""
+    ) {
         let order = Order(context: store.context)
         order.id = UUID()
         order.date = Date()
         order.totalAmount = totalAmount
         order.status = "Bestellt"
+        order.paymentStatus = StripeCheckoutManager.PaymentStatus.pending.rawValue
+
+        // Kundendaten (Gastbestellung)
+        order.firstName = firstName
+        order.lastName = lastName
+        order.email = email
+        order.phone = phone
+        order.street = street
+        order.zip = zip
+        order.city = city
 
         for cartItem in cartItems {
             let orderItem = OrderItem(context: store.context)
