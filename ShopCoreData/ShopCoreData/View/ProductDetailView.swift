@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProductDetailView: View {
-    let product: Product
+    @ObservedObject var product: Product
     @ObservedObject var cartViewModel: CartViewModel
     @ObservedObject var productViewModel: ProductViewModel
     @State private var showAddedFeedback = false
@@ -211,7 +211,10 @@ struct ProductDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showWriteReview) {
+        .sheet(isPresented: $showWriteReview, onDismiss: {
+            // Context refreshen damit die neue Bewertung sofort sichtbar ist
+            product.managedObjectContext?.refresh(product, mergeChanges: true)
+        }) {
             WriteReviewView(product: product)
         }
     }
@@ -220,7 +223,7 @@ struct ProductDetailView: View {
 // MARK: - Bewertungs-Zusammenfassung (Sterne-Leiste)
 
 struct ReviewSummaryBar: View {
-    let product: Product
+    @ObservedObject var product: Product
 
     private var reviews: [Review] {
         let set = product.reviews as? Set<Review> ?? []
@@ -282,7 +285,7 @@ struct StarRatingView: View {
 // MARK: - Kundenbewertungen Sektion
 
 struct ReviewSection: View {
-    let product: Product
+    @ObservedObject var product: Product
     @Binding var showWriteReview: Bool
 
     private var sortedReviews: [Review] {
