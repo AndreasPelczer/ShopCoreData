@@ -12,6 +12,7 @@ struct ProductDetailView: View {
     @ObservedObject var cartViewModel: CartViewModel
     @ObservedObject var productViewModel: ProductViewModel
     @State private var showAddedFeedback = false
+    @State private var showWriteReview = false
 
     private var isInCart: Bool {
         cartViewModel.cartItems.contains(where: { $0.product?.id == product.id })
@@ -33,7 +34,7 @@ struct ProductDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Produktbilder-Galerie
+                // Produktbilder-Galerie (nur Admin-Bilder)
                 ProductImageGalleryView(product: product)
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -74,6 +75,9 @@ struct ProductDetailView: View {
                     Text(currencyFormatter.string(from: NSNumber(value: product.price)) ?? "")
                         .font(.gallerySubtitle)
                         .foregroundColor(.smokyQuartz)
+
+                    // Bewertungs-Durchschnitt
+                    ReviewSummaryBar(product: product)
 
                     // Verfügbarkeit
                     HStack {
@@ -185,6 +189,10 @@ struct ProductDetailView: View {
                 }
                 .disabled(!canAddToCart)
                 .padding(.horizontal)
+
+                // Kundenbewertungen
+                ReviewSection(product: product, showWriteReview: $showWriteReview)
+                    .padding(.horizontal)
             }
             .padding(.vertical)
         }
@@ -193,22 +201,189 @@ struct ProductDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            productViewModel.toggleFavorite(product)
-                        }
-                    } label: {
-                        Image(systemName: product.isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(product.isFavorite ? .gallerySold : .gallerySecondaryText)
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        productViewModel.toggleFavorite(product)
                     }
-
-                    NavigationLink(destination: AdminImageUploadView(product: product, viewModel: productViewModel)) {
-                        Image(systemName: "photo.badge.plus")
-                            .foregroundColor(.smokyQuartz)
-                    }
+                } label: {
+                    Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+                        .foregroundColor(product.isFavorite ? .gallerySold : .gallerySecondaryText)
                 }
             }
         }
+        .sheet(isPresented: $showWriteReview) {
+            WriteReviewView(product: product)
+        }
+    }
+}
+
+// MARK: - Bewertungs-Zusammenfassung (Sterne-Leiste)
+
+struct ReviewSummaryBar: View {
+    let product: Product
+
+    private var reviews: [Review] {
+        let set = product.reviews as? Set<Review> ?? []
+        return Array(set)
+    }
+
+    private var averageRating: Double {
+        guard !reviews.isEmpty else { return 0 }
+        let total = reviews.reduce(0) { $0 + Int($1.rating) }
+        return Double(total) / Double(reviews.count)
+    }
+
+    var body: some View {
+        if !reviews.isEmpty {
+            HStack(spacing: 4) {
+                StarRatingView(rating: averageRating, size: 14)
+
+                Text(String(format: "%.1f", averageRating))
+                    .font(.galleryCaption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.softWhite)
+
+                Text("(\(reviews.count))")
+                    .font(.galleryCaption)
+                    .foregroundColor(.gallerySecondaryText)
+            }
+        }
+    }
+}
+
+// MARK: - Sterne-Anzeige
+
+struct StarRatingView: View {
+    let rating: Double
+    let size: CGFloat
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(1...5, id: \.self) { star in
+                Image(systemName: starImageName(for: star))
+                    .font(.system(size: size))
+                    .foregroundColor(.mutedAmber)
+            }
+        }
+    }
+
+    private func starImageName(for star: Int) -> String {
+        let diff = rating - Double(star - 1)
+        if diff >= 1 {
+            return "star.fill"
+        } else if diff >= 0.5 {
+            return "star.leadinghalf.filled"
+        } else {
+            return "star"
+        }
+    }
+}
+
+// MARK: - Kundenbewertungen Sektion
+
+struct ReviewSection: View {
+    let product: Product
+    @Binding var showWriteReview: Bool
+
+    private var sortedReviews: [Review] {
+        let set = product.reviews as? Set<Review> ?? []
+        return set.sorted { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Rectangle()
+                .fill(Color.galleryDivider)
+                .frame(height: 1)
+
+            HStack {
+                Text("Kundenbewertungen")
+                    .font(.gallerySubtitle)
+                    .foregroundColor(.softWhite)
+                Spacer()
+                Button {
+                    showWriteReview = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.and.pencil")
+                        Text("Bewerten")
+                    }
+                    .font(.galleryCaption)
+                    .foregroundColor(.smokyQuartz)
+                }
+            }
+
+            if sortedReviews.isEmpty {
+                VStack(spacing: 8) {
+                    Text("Noch keine Bewertungen")
+                        .font(.galleryBody)
+                        .foregroundColor(.gallerySecondaryText)
+                    Text("Sei der Erste, der dieses Stück bewertet.")
+                        .font(.galleryCaption)
+                        .foregroundColor(.gallerySecondaryText.opacity(0.7))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+            } else {
+                ForEach(sortedReviews, id: \.id) { review in
+                    ReviewCard(review: review)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Einzelne Bewertungskarte
+
+struct ReviewCard: View {
+    let review: Review
+
+    private var dateString: String {
+        guard let date = review.createdAt else { return "" }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.locale = Locale(identifier: "de_DE")
+        return formatter.string(from: date)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                // Autor und Datum
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(review.authorName ?? "Anonym")
+                        .font(.galleryBody)
+                        .fontWeight(.medium)
+                        .foregroundColor(.softWhite)
+                    Text(dateString)
+                        .font(.galleryCaption)
+                        .foregroundColor(.gallerySecondaryText)
+                }
+                Spacer()
+                StarRatingView(rating: Double(review.rating), size: 12)
+            }
+
+            // Bewertungstext
+            if let text = review.text, !text.isEmpty {
+                Text(text)
+                    .font(.galleryBody)
+                    .foregroundColor(.gallerySecondaryText)
+            }
+
+            // Kundenfoto
+            if let photoData = review.photoData,
+               let uiImage = UIImage(data: photoData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .clipped()
+                    .cornerRadius(8)
+            }
+        }
+        .padding(12)
+        .background(Color.galleryPanel)
+        .cornerRadius(10)
     }
 }
