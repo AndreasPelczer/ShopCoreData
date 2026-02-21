@@ -13,6 +13,7 @@ import CloudKit
 /// und in der Keychain gespeichert.
 struct AdminDashboardView: View {
     @ObservedObject var productViewModel: ProductViewModel
+    @ObservedObject var orderViewModel: OrderViewModel
     @StateObject private var cloudKitManager = CloudKitManager.shared
     @State private var isAuthenticated = false
     @State private var pinInput = ""
@@ -177,6 +178,26 @@ struct AdminDashboardView: View {
                         cloudKitManager: cloudKitManager,
                         productViewModel: productViewModel
                     )
+
+                    // Bestellverwaltung
+                    NavigationLink(destination: AdminOrderManagementView(orderViewModel: orderViewModel)) {
+                        AdminQuickCard(
+                            icon: "shippingbox",
+                            title: "Bestellungen",
+                            subtitle: "\(orderViewModel.orders.count) Bestellungen",
+                            color: .oxidCopper
+                        )
+                    }
+
+                    // Gutscheinverwaltung
+                    NavigationLink(destination: AdminCouponView()) {
+                        AdminQuickCard(
+                            icon: "ticket",
+                            title: "Gutscheine",
+                            subtitle: "Erstellen & verwalten",
+                            color: .smokyQuartz
+                        )
+                    }
 
                     ProductManagementCard(productViewModel: productViewModel)
                 }
@@ -415,6 +436,44 @@ struct SyncActionsCard: View {
         } message: {
             Text("Alle Produkte, Kategorien und Bilder werden in iCloud hochgeladen und für Kunden sichtbar.")
         }
+    }
+}
+
+// MARK: - Admin Quick Card
+
+struct AdminQuickCard: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+                .frame(width: 44, height: 44)
+                .background(color.opacity(0.15))
+                .cornerRadius(10)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.gallerySubtitle)
+                    .foregroundColor(.softWhite)
+                Text(subtitle)
+                    .font(.galleryCaption)
+                    .foregroundColor(.gallerySecondaryText)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.gallerySecondaryText)
+        }
+        .padding()
+        .background(Color.galleryPanel)
+        .cornerRadius(12)
     }
 }
 

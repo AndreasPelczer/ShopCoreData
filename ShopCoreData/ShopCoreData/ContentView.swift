@@ -40,7 +40,13 @@ struct ContentView: View {
                     Text("Bestellungen")
                 }
 
-            AdminDashboardView(productViewModel: productViewModel)
+            ContactView()
+                .tabItem {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                    Text("Kontakt")
+                }
+
+            AdminDashboardView(productViewModel: productViewModel, orderViewModel: orderViewModel)
                 .tabItem {
                     Image(systemName: "paintbrush.pointed")
                     Text("Atelier")

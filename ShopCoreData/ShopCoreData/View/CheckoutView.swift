@@ -10,6 +10,7 @@ import SwiftUI
 struct CheckoutView: View {
     @ObservedObject var cartViewModel: CartViewModel
     @ObservedObject var orderViewModel: OrderViewModel
+    @StateObject private var couponViewModel = CouponViewModel()
     @Environment(\.dismiss) private var dismiss
 
     // Checkout-Schritte
@@ -26,6 +27,9 @@ struct CheckoutView: View {
     @State private var city = ""
     @State private var acceptedTerms = false
 
+    // Gutscheincode
+    @State private var couponCode = ""
+
     enum CheckoutStep: Int, CaseIterable {
         case address = 0
         case summary = 1
@@ -37,6 +41,12 @@ struct CheckoutView: View {
         f.numberStyle = .currency
         f.locale = Locale(identifier: "de_DE")
         return f
+    }
+
+    private var finalTotal: Double {
+        let subtotal = cartViewModel.totalPrice
+        let discount = couponViewModel.discountForAppliedCoupon(orderTotal: subtotal)
+        return max(subtotal - discount, 0)
     }
 
     private var isAddressValid: Bool {
@@ -196,6 +206,54 @@ struct CheckoutView: View {
                 .background(Color.galleryPanel)
                 .cornerRadius(8)
 
+                // Gutscheincode
+                SectionHeader(title: "Gutscheincode")
+
+                HStack(spacing: 8) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "ticket")
+                            .foregroundColor(.gallerySecondaryText)
+                            .frame(width: 20)
+                        TextField("Code eingeben", text: $couponCode)
+                            .foregroundColor(.softWhite)
+                            .textInputAutocapitalization(.characters)
+                            .autocorrectionDisabled()
+                    }
+                    .padding(10)
+                    .background(Color.galleryPanel)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.galleryDivider, lineWidth: 1)
+                    )
+
+                    Button {
+                        couponViewModel.validateCoupon(code: couponCode, orderTotal: cartViewModel.totalPrice)
+                    } label: {
+                        Text("Einlösen")
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(couponCode.isEmpty ? Color.gallerySecondaryText.opacity(0.3) : Color.smokyQuartz)
+                            .foregroundColor(couponCode.isEmpty ? .gallerySecondaryText : .galleryBackground)
+                            .cornerRadius(8)
+                    }
+                    .disabled(couponCode.isEmpty)
+                }
+
+                if let message = couponViewModel.couponMessage {
+                    HStack(spacing: 6) {
+                        Image(systemName: couponViewModel.couponIsValid ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        Text(message)
+                    }
+                    .font(.galleryCaption)
+                    .foregroundColor(couponViewModel.couponIsValid ? .galleryAvailable : .gallerySold)
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background((couponViewModel.couponIsValid ? Color.galleryAvailable : Color.gallerySold).opacity(0.1))
+                    .cornerRadius(6)
+                }
+
                 // Kosten
                 VStack(spacing: 8) {
                     HStack {
@@ -205,6 +263,21 @@ struct CheckoutView: View {
                         Text(currencyFormatter.string(from: NSNumber(value: cartViewModel.totalPrice)) ?? "")
                             .foregroundColor(.softWhite)
                     }
+
+                    if couponViewModel.couponIsValid {
+                        let discount = couponViewModel.discountForAppliedCoupon(orderTotal: cartViewModel.totalPrice)
+                        HStack {
+                            HStack(spacing: 4) {
+                                Image(systemName: "ticket")
+                                Text("Gutschein")
+                            }
+                            .foregroundColor(.galleryAvailable)
+                            Spacer()
+                            Text("- \(currencyFormatter.string(from: NSNumber(value: discount)) ?? "")")
+                                .foregroundColor(.galleryAvailable)
+                        }
+                    }
+
                     HStack {
                         Text("Versand")
                             .foregroundColor(.gallerySecondaryText)
@@ -220,7 +293,7 @@ struct CheckoutView: View {
                             .font(.gallerySubtitle)
                             .foregroundColor(.softWhite)
                         Spacer()
-                        Text(currencyFormatter.string(from: NSNumber(value: cartViewModel.totalPrice)) ?? "")
+                        Text(currencyFormatter.string(from: NSNumber(value: finalTotal)) ?? "")
                             .font(.gallerySubtitle)
                             .foregroundColor(.smokyQuartz)
                     }
@@ -387,17 +460,23 @@ struct CheckoutView: View {
     // MARK: - Bestellung erstellen
 
     private func placeOrder() {
+        let discount = couponViewModel.discountForAppliedCoupon(orderTotal: cartViewModel.totalPrice)
+
         orderViewModel.placeOrder(
             cartItems: cartViewModel.cartItems,
-            totalAmount: cartViewModel.totalPrice,
+            totalAmount: finalTotal,
             firstName: firstName,
             lastName: lastName,
             email: email,
             phone: phone.isEmpty ? nil : phone,
             street: street,
             zip: zip,
-            city: city
+            city: city,
+            couponCode: couponViewModel.appliedCoupon?.code,
+            discountAmount: discount
         )
+
+        couponViewModel.markCouponUsed()
     }
 }
 
