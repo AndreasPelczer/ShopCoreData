@@ -193,9 +193,20 @@ struct ProductDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink(destination: AdminImageUploadView(product: product, viewModel: productViewModel)) {
-                    Image(systemName: "photo.badge.plus")
-                        .foregroundColor(.smokyQuartz)
+                HStack(spacing: 16) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            productViewModel.toggleFavorite(product)
+                        }
+                    } label: {
+                        Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(product.isFavorite ? .gallerySold : .gallerySecondaryText)
+                    }
+
+                    NavigationLink(destination: AdminImageUploadView(product: product, viewModel: productViewModel)) {
+                        Image(systemName: "photo.badge.plus")
+                            .foregroundColor(.smokyQuartz)
+                    }
                 }
             }
         }

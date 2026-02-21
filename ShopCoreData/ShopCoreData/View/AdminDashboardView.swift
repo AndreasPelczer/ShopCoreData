@@ -9,35 +9,273 @@ import SwiftUI
 import CloudKit
 
 /// Admin-Dashboard für den Künstler.
-/// Bietet Überblick über Produkte, Bildverwaltung und CloudKit-Sync.
+/// Geschützt durch einen 4-stelligen PIN. Der PIN wird beim ersten Start gesetzt
+/// und in der Keychain gespeichert.
 struct AdminDashboardView: View {
     @ObservedObject var productViewModel: ProductViewModel
     @StateObject private var cloudKitManager = CloudKitManager.shared
+    @State private var isAuthenticated = false
+    @State private var pinInput = ""
+    @State private var isSettingPin = false
+    @State private var confirmPin = ""
+    @State private var pinStep: PinStep = .enter
+    @State private var showPinError = false
+
+    private enum PinStep {
+        case enter, confirm
+    }
+
+    /// Prüft ob bereits ein PIN gesetzt wurde.
+    private var hasStoredPin: Bool {
+        AtelierPinManager.hasPin
+    }
 
     var body: some View {
+        if isAuthenticated {
+            dashboardContent
+        } else {
+            pinEntryView
+        }
+    }
+
+    // MARK: - PIN-Eingabe
+
+    private var pinEntryView: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
+            Image(systemName: "lock.shield")
+                .font(.system(size: 48))
+                .foregroundColor(.smokyQuartz)
+
+            Text(isSettingPin ? "Atelier-PIN festlegen" : "Atelier")
+                .font(.galleryTitle)
+                .foregroundColor(.softWhite)
+
+            Text(pinStepDescription)
+                .font(.galleryBody)
+                .foregroundColor(.gallerySecondaryText)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+
+            // PIN-Punkte
+            HStack(spacing: 14) {
+                ForEach(0..<4, id: \.self) { index in
+                    Circle()
+                        .fill(index < pinInput.count ? Color.smokyQuartz : Color.galleryChipBackground)
+                        .frame(width: 16, height: 16)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.galleryDivider, lineWidth: 1)
+                        )
+                }
+            }
+            .padding(.vertical, 8)
+
+            if showPinError {
+                Text(isSettingPin ? "PINs stimmen nicht überein" : "Falscher PIN")
+                    .font(.galleryCaption)
+                    .foregroundColor(.gallerySold)
+                    .transition(.opacity)
+            }
+
+            // Nummernpad
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(72), spacing: 16), count: 3), spacing: 12) {
+                ForEach(1...9, id: \.self) { digit in
+                    PinButton(label: "\(digit)") {
+                        appendDigit("\(digit)")
+                    }
+                }
+                // Leeres Feld links
+                Color.clear.frame(width: 72, height: 72)
+
+                PinButton(label: "0") {
+                    appendDigit("0")
+                }
+
+                // Löschen-Button rechts
+                Button {
+                    if !pinInput.isEmpty {
+                        pinInput.removeLast()
+                    }
+                } label: {
+                    Image(systemName: "delete.left")
+                        .font(.title2)
+                        .foregroundColor(.gallerySecondaryText)
+                        .frame(width: 72, height: 72)
+                }
+            }
+
+            Spacer()
+        }
+        .background(Color.galleryBackground)
+        .onAppear {
+            isSettingPin = !hasStoredPin
+        }
+    }
+
+    private var pinStepDescription: String {
+        if isSettingPin {
+            return pinStep == .enter
+                ? "Wähle einen 4-stelligen PIN für den Zugang zum Atelier."
+                : "Bestätige deinen PIN."
+        }
+        return "Gib deinen PIN ein, um das Atelier zu öffnen."
+    }
+
+    private func appendDigit(_ digit: String) {
+        guard pinInput.count < 4 else { return }
+        pinInput += digit
+        showPinError = false
+
+        if pinInput.count == 4 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                handlePinComplete()
+            }
+        }
+    }
+
+    private func handlePinComplete() {
+        if isSettingPin {
+            if pinStep == .enter {
+                // Erster Schritt: PIN merken und bestätigen lassen
+                confirmPin = pinInput
+                pinInput = ""
+                pinStep = .confirm
+            } else {
+                // Zweiter Schritt: PINs vergleichen
+                if pinInput == confirmPin {
+                    AtelierPinManager.setPin(pinInput)
+                    withAnimation { isAuthenticated = true }
+                } else {
+                    showPinError = true
+                    pinInput = ""
+                    pinStep = .enter
+                    confirmPin = ""
+                }
+            }
+        } else {
+            // Login: PIN prüfen
+            if AtelierPinManager.verify(pinInput) {
+                withAnimation { isAuthenticated = true }
+            } else {
+                showPinError = true
+                pinInput = ""
+            }
+        }
+    }
+
+    // MARK: - Dashboard
+
+    private var dashboardContent: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // CloudKit Status
                     CloudKitStatusCard(cloudKitManager: cloudKitManager)
 
-                    // Sync-Buttons
                     SyncActionsCard(
                         cloudKitManager: cloudKitManager,
                         productViewModel: productViewModel
                     )
 
-                    // Produktübersicht
                     ProductManagementCard(productViewModel: productViewModel)
                 }
                 .padding()
             }
             .background(Color.galleryBackground)
             .navigationTitle("Atelier")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        withAnimation { isAuthenticated = false }
+                        pinInput = ""
+                    } label: {
+                        Image(systemName: "lock")
+                            .foregroundColor(.smokyQuartz)
+                    }
+                }
+            }
             .task {
                 await cloudKitManager.checkAccountStatus()
             }
         }
+    }
+}
+
+// MARK: - PIN Button
+
+struct PinButton: View {
+    let label: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 28, weight: .light, design: .rounded))
+                .foregroundColor(.softWhite)
+                .frame(width: 72, height: 72)
+                .background(Color.galleryPanel)
+                .clipShape(Circle())
+        }
+    }
+}
+
+// MARK: - PIN Manager (Keychain-basiert)
+
+/// Speichert den Atelier-PIN sicher in der Keychain.
+enum AtelierPinManager {
+    private static let service = "com.syntax.ShopCoreData.atelierPin"
+    private static let account = "atelierPin"
+
+    static var hasPin: Bool {
+        loadPin() != nil
+    }
+
+    static func setPin(_ pin: String) {
+        let data = Data(pin.utf8)
+
+        // Erst löschen falls vorhanden
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+
+        // Dann speichern
+        let addQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
+        ]
+        SecItemAdd(addQuery as CFDictionary, nil)
+    }
+
+    static func verify(_ pin: String) -> Bool {
+        guard let stored = loadPin() else { return false }
+        return pin == stored
+    }
+
+    private static func loadPin() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        guard status == errSecSuccess,
+              let data = result as? Data,
+              let pin = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        return pin
     }
 }
 

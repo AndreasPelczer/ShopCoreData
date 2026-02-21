@@ -93,4 +93,16 @@ class ProductViewModel: ObservableObject {
     func sortedImages(for product: Product) -> [ProductImage] {
         imageManager.sortedImages(for: product)
     }
+
+    // MARK: - Favoriten
+
+    var favoriteProducts: [Product] {
+        products.filter { $0.isFavorite }
+    }
+
+    func toggleFavorite(_ product: Product) {
+        product.isFavorite.toggle()
+        store.save()
+        fetchProducts()
+    }
 }
