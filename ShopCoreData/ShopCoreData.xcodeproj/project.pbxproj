@@ -27,6 +27,12 @@
 		CA0000152B46E0010055AC3D /* OrderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA00000F2B46E0010055AC3D /* OrderDetailView.swift */; };
 		CA0000182B46E0010055AC3D /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000162B46E0010055AC3D /* ColorTheme.swift */; };
 		CA0000192B46E0010055AC3D /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0000172B46E0010055AC3D /* Typography.swift */; };
+		CB0000052C46E0010055AC3D /* ImageStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000012C46E0010055AC3D /* ImageStorageManager.swift */; };
+		CB0000062C46E0010055AC3D /* AdminImageUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000022C46E0010055AC3D /* AdminImageUploadView.swift */; };
+		CB0000072C46E0010055AC3D /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000032C46E0010055AC3D /* ImagePickerView.swift */; };
+		CB0000082C46E0010055AC3D /* ProductImageGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0000042C46E0010055AC3D /* ProductImageGalleryView.swift */; };
+		CB0000092C46E0010055AC3D /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000A2C46E0010055AC3D /* CloudKitManager.swift */; };
+		CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +76,12 @@
 		CA00000F2B46E0010055AC3D /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
 		CA0000162B46E0010055AC3D /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
 		CA0000172B46E0010055AC3D /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		CB0000012C46E0010055AC3D /* ImageStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageManager.swift; sourceTree = "<group>"; };
+		CB0000022C46E0010055AC3D /* AdminImageUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminImageUploadView.swift; sourceTree = "<group>"; };
+		CB0000032C46E0010055AC3D /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		CB0000042C46E0010055AC3D /* ProductImageGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductImageGalleryView.swift; sourceTree = "<group>"; };
+		CB00000A2C46E0010055AC3D /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
+		CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +173,8 @@
 			children = (
 				1A5B91192B46D4E50055AC3D /* ShopData.xcdatamodeld */,
 				1A5B911C2B46D77D0055AC3D /* PersistentStore.swift */,
+				CB0000012C46E0010055AC3D /* ImageStorageManager.swift */,
+				CB00000A2C46E0010055AC3D /* CloudKitManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -186,6 +200,10 @@
 				CA00000D2B46E0010055AC3D /* CheckoutView.swift */,
 				CA00000E2B46E0010055AC3D /* OrderHistoryView.swift */,
 				CA00000F2B46E0010055AC3D /* OrderDetailView.swift */,
+				CB0000022C46E0010055AC3D /* AdminImageUploadView.swift */,
+				CB0000032C46E0010055AC3D /* ImagePickerView.swift */,
+				CB0000042C46E0010055AC3D /* ProductImageGalleryView.swift */,
+				CB00000C2C46E0010055AC3D /* AdminDashboardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -335,6 +353,12 @@
 				CA0000152B46E0010055AC3D /* OrderDetailView.swift in Sources */,
 				CA0000182B46E0010055AC3D /* ColorTheme.swift in Sources */,
 				CA0000192B46E0010055AC3D /* Typography.swift in Sources */,
+				CB0000052C46E0010055AC3D /* ImageStorageManager.swift in Sources */,
+				CB0000062C46E0010055AC3D /* AdminImageUploadView.swift in Sources */,
+				CB0000072C46E0010055AC3D /* ImagePickerView.swift in Sources */,
+				CB0000082C46E0010055AC3D /* ProductImageGalleryView.swift in Sources */,
+				CB0000092C46E0010055AC3D /* CloudKitManager.swift in Sources */,
+				CB00000B2C46E0010055AC3D /* AdminDashboardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

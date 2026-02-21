@@ -32,6 +32,12 @@ struct ContentView: View {
                     Image(systemName: "clock.arrow.circlepath")
                     Text("Bestellungen")
                 }
+
+            AdminDashboardView(productViewModel: productViewModel)
+                .tabItem {
+                    Image(systemName: "paintbrush.pointed")
+                    Text("Atelier")
+                }
         }
         .tint(.smokyQuartz)
     }
