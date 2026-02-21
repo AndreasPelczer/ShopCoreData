@@ -18,6 +18,7 @@ struct AdminImageUploadView: View {
     @State private var capturedImage: UIImage?
     @State private var showDeleteConfirmation = false
     @State private var imageToDelete: ProductImage?
+    @State private var showNextExemplarConfirm = false
 
     private var productImages: [ProductImage] {
         viewModel.sortedImages(for: product)
@@ -37,6 +38,48 @@ struct AdminImageUploadView: View {
                         .foregroundColor(.gallerySecondaryText)
                 }
                 .padding(.horizontal)
+
+                // Banner: Unikat verkauft → nächstes Exemplar vorbereiten
+                if product.isUnique && product.quantity <= 0 {
+                    VStack(spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "sparkles")
+                                .foregroundColor(.mutedAmber)
+                            Text("Dieses Unikat wurde verkauft!")
+                                .font(.galleryBody)
+                                .fontWeight(.medium)
+                                .foregroundColor(.softWhite)
+                        }
+
+                        Text("Bereite das nächste Exemplar vor: Alte Fotos werden entfernt und du kannst neue Fotos des nächsten Stücks hochladen.")
+                            .font(.galleryCaption)
+                            .foregroundColor(.gallerySecondaryText)
+                            .multilineTextAlignment(.center)
+
+                        Button {
+                            showNextExemplarConfirm = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Text("Nächstes Exemplar vorbereiten")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.mutedAmber)
+                            .foregroundColor(.galleryBackground)
+                            .cornerRadius(12)
+                        }
+                    }
+                    .padding()
+                    .background(Color.mutedAmber.opacity(0.1))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.mutedAmber.opacity(0.3), lineWidth: 1)
+                    )
+                    .padding(.horizontal)
+                }
 
                 // Vorhandene Bilder als Grid
                 if !productImages.isEmpty {
@@ -158,6 +201,14 @@ struct AdminImageUploadView: View {
             guard let image = newImage else { return }
             viewModel.addImages([image], to: product)
             capturedImage = nil
+        }
+        .alert("Nächstes Exemplar?", isPresented: $showNextExemplarConfirm) {
+            Button("Abbrechen", role: .cancel) {}
+            Button("Vorbereiten") {
+                viewModel.prepareNextExemplar(for: product)
+            }
+        } message: {
+            Text("Alle aktuellen Fotos werden gelöscht und das Produkt wird wieder als verfügbar angezeigt. Du kannst danach neue Fotos hochladen.")
         }
         .alert("Bild löschen?", isPresented: $showDeleteConfirmation) {
             Button("Abbrechen", role: .cancel) {

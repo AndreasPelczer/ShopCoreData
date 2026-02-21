@@ -94,6 +94,27 @@ class ProductViewModel: ObservableObject {
         imageManager.sortedImages(for: product)
     }
 
+    // MARK: - Nächstes Exemplar (Unikate)
+
+    /// Bereitet ein Unikat für das nächste Exemplar vor:
+    /// - Löscht alle aktuellen Produktbilder
+    /// - Setzt die Menge auf 1 (wieder verfügbar)
+    /// Der Künstler lädt danach neue Fotos des neuen Exemplars hoch.
+    func prepareNextExemplar(for product: Product) {
+        guard product.isUnique else { return }
+
+        // Alle Bilder löschen
+        let images = sortedImages(for: product)
+        for image in images {
+            imageManager.deleteImage(image)
+        }
+
+        // Wieder verfügbar machen
+        product.quantity = 1
+        store.save()
+        fetchProducts()
+    }
+
     // MARK: - Favoriten
 
     var favoriteProducts: [Product] {
