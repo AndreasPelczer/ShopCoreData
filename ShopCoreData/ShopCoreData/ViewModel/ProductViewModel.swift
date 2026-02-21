@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import Combine
+import UIKit
 
 class ProductViewModel: ObservableObject {
 
@@ -18,10 +19,12 @@ class ProductViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     let store: PersistentStore
+    let imageManager: ImageStorageManager
     private var cancellable: AnyCancellable?
 
     init(store: PersistentStore = .shared) {
         self.store = store
+        self.imageManager = ImageStorageManager(store: store)
         fetchCategories()
         fetchProducts()
 
@@ -70,5 +73,24 @@ class ProductViewModel: ObservableObject {
         } catch {
             errorMessage = "Kategorien konnten nicht geladen werden: \(error.localizedDescription)"
         }
+    }
+
+    // MARK: - Bildverwaltung
+
+    /// Fügt Bilder zu einem Produkt hinzu und aktualisiert die Ansicht.
+    func addImages(_ images: [UIImage], to product: Product) {
+        imageManager.addImages(images, to: product)
+        fetchProducts()
+    }
+
+    /// Löscht ein einzelnes Bild und aktualisiert die Ansicht.
+    func deleteImage(_ productImage: ProductImage) {
+        imageManager.deleteImage(productImage)
+        fetchProducts()
+    }
+
+    /// Gibt die sortierten Bilder eines Produkts zurück.
+    func sortedImages(for product: Product) -> [ProductImage] {
+        imageManager.sortedImages(for: product)
     }
 }

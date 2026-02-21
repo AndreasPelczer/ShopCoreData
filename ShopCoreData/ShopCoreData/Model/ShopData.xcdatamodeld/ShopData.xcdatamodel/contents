@@ -37,5 +37,14 @@
         <attribute name="quantity" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="cartItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CartItem" inverseName="product" inverseEntity="CartItem"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="products" inverseEntity="Category"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ProductImage" inverseName="product" inverseEntity="ProductImage"/>
+    </entity>
+    <entity name="ProductImage" representedClassName="ProductImage" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="images" inverseEntity="Product"/>
     </entity>
 </model>

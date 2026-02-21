@@ -47,7 +47,7 @@ struct ProductListView: View {
 
                 // Produktliste
                 List(viewModel.filteredProducts, id: \.id) { product in
-                    NavigationLink(destination: ProductDetailView(product: product, cartViewModel: cartViewModel)) {
+                    NavigationLink(destination: ProductDetailView(product: product, cartViewModel: cartViewModel, productViewModel: viewModel)) {
                         ProductRow(product: product, currencyFormatter: currencyFormatter)
                     }
                     .listRowBackground(Color.galleryBackground)
@@ -105,12 +105,7 @@ struct ProductRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: product.imageName ?? "shippingbox")
-                .font(.title2)
-                .foregroundColor(.smokyQuartz)
-                .frame(width: 50, height: 50)
-                .background(Color.galleryPanel)
-                .cornerRadius(8)
+            ProductThumbnailView(product: product, size: 50)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
