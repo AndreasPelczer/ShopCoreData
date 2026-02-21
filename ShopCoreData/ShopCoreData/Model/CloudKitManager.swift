@@ -13,21 +13,56 @@ import Combine
 /// Verwaltet die CloudKit-Kommunikation für den Shop.
 /// Nutzt die Public Database, damit Kunden Produkte sehen können,
 /// die der Künstler hochgeladen hat.
+///
+/// WICHTIG: CloudKit funktioniert erst, wenn im Xcode-Projekt
+/// unter Signing & Capabilities → iCloud → CloudKit aktiviert ist.
+/// Ohne Entitlement zeigt der Manager "Nicht konfiguriert" an,
+/// statt die App abstürzen zu lassen.
 final class CloudKitManager: ObservableObject {
     static let shared = CloudKitManager()
 
     // MARK: - Konfiguration
 
     /// CloudKit Container ID — muss im Apple Developer Portal eingerichtet werden.
-    /// Setze hier deine echte Container-ID ein (Format: "iCloud.com.syntax.ShopCoreData").
     private let containerID = "iCloud.com.syntax.ShopCoreData"
 
-    private lazy var container: CKContainer = {
-        CKContainer(identifier: containerID)
-    }()
+    /// Lazy container — wird nur erstellt, wenn CloudKit konfiguriert ist.
+    private var _container: CKContainer?
+    private var container: CKContainer? {
+        if _container == nil && isEntitlementAvailable {
+            _container = CKContainer(identifier: containerID)
+        }
+        return _container
+    }
 
-    private var publicDatabase: CKDatabase {
-        container.publicCloudDatabase
+    private var publicDatabase: CKDatabase? {
+        container?.publicCloudDatabase
+    }
+
+    /// Prüft ob das CloudKit-Entitlement vorhanden ist.
+    /// Wenn nicht, werden keine CKContainer-Aufrufe gemacht (verhindert EXC_BREAKPOINT).
+    private var isEntitlementAvailable: Bool {
+        // Prüfe ob die iCloud-Entitlement-Keys im Bundle vorhanden sind
+        guard let entitlements = Bundle.main.infoDictionary else { return false }
+
+        // Prüfe über die Capabilities im embedded provisioning profile
+        // Falls kein Profil vorhanden, prüfen wir ob der Container erreichbar ist
+        // Sicherster Check: CloudKit Capability im Build-Target prüfen
+        if let iCloudContainers = entitlements["com.apple.developer.icloud-container-identifiers"] as? [String],
+           !iCloudContainers.isEmpty {
+            return true
+        }
+
+        // Alternativer Check: Datei .entitlements im Bundle
+        if let entitlementsURL = Bundle.main.url(forResource: "ShopCoreData", withExtension: "entitlements"),
+           let data = try? Data(contentsOf: entitlementsURL),
+           let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+           let services = plist["com.apple.developer.icloud-services"] as? [String],
+           services.contains("CloudKit") {
+            return true
+        }
+
+        return false
     }
 
     // MARK: - Record Types (CloudKit Schema)
@@ -43,21 +78,34 @@ final class CloudKitManager: ObservableObject {
     @Published var isSyncing = false
     @Published var lastSyncError: String?
     @Published var accountStatus: CKAccountStatus = .couldNotDetermine
+    @Published var isCloudKitConfigured = false
 
     private let store: PersistentStore
 
     init(store: PersistentStore = .shared) {
         self.store = store
+        self.isCloudKitConfigured = isEntitlementAvailable
     }
 
     // MARK: - Account-Status prüfen
 
     /// Prüft ob der Benutzer bei iCloud angemeldet ist.
+    /// Sicher auch ohne CloudKit-Entitlement — zeigt dann "Nicht konfiguriert".
     func checkAccountStatus() async {
+        guard let container = container else {
+            await MainActor.run {
+                self.accountStatus = .couldNotDetermine
+                self.isCloudKitConfigured = false
+                self.lastSyncError = "CloudKit ist noch nicht konfiguriert. Aktiviere iCloud → CloudKit in Xcode unter Signing & Capabilities."
+            }
+            return
+        }
+
         do {
             let status = try await container.accountStatus()
             await MainActor.run {
                 self.accountStatus = status
+                self.isCloudKitConfigured = true
             }
         } catch {
             await MainActor.run {
@@ -67,19 +115,41 @@ final class CloudKitManager: ObservableObject {
         }
     }
 
+    // MARK: - Guard
+
+    private func requireDatabase() throws -> CKDatabase {
+        guard let db = publicDatabase else {
+            throw CloudKitError.notConfigured
+        }
+        return db
+    }
+
+    enum CloudKitError: LocalizedError {
+        case notConfigured
+
+        var errorDescription: String? {
+            switch self {
+            case .notConfigured:
+                return "CloudKit ist nicht konfiguriert. Aktiviere iCloud → CloudKit in Xcode unter Signing & Capabilities."
+            }
+        }
+    }
+
     // MARK: - Upload (Künstler → CloudKit)
 
     /// Lädt eine Kategorie in CloudKit hoch.
     func uploadCategory(_ category: Category) async throws -> CKRecord {
+        let db = try requireDatabase()
         let record = CKRecord(recordType: RecordType.category.rawValue)
         record["name"] = category.name
         record["localID"] = category.id?.uuidString
 
-        return try await publicDatabase.save(record)
+        return try await db.save(record)
     }
 
     /// Lädt ein Produkt mit allen Bildern in CloudKit hoch.
     func uploadProduct(_ product: Product, categoryRecordID: CKRecord.ID) async throws -> CKRecord {
+        let db = try requireDatabase()
         let record = CKRecord(recordType: RecordType.product.rawValue)
         record["name"] = product.name
         record["price"] = product.price
@@ -93,7 +163,7 @@ final class CloudKitManager: ObservableObject {
         record["localID"] = product.id?.uuidString
         record["category"] = CKRecord.Reference(recordID: categoryRecordID, action: .none)
 
-        let savedRecord = try await publicDatabase.save(record)
+        let savedRecord = try await db.save(record)
 
         // Bilder hochladen
         let imageManager = ImageStorageManager(store: store)
@@ -108,6 +178,7 @@ final class CloudKitManager: ObservableObject {
 
     /// Lädt ein einzelnes Produktbild als CKAsset in CloudKit hoch.
     func uploadProductImage(_ productImage: ProductImage, productRecordID: CKRecord.ID) async throws {
+        let db = try requireDatabase()
         guard let imageData = productImage.imageData else { return }
 
         // CKAsset benötigt eine temporäre Datei
@@ -133,7 +204,7 @@ final class CloudKitManager: ObservableObject {
             record["thumbnail"] = CKAsset(fileURL: thumbURL)
         }
 
-        _ = try await publicDatabase.save(record)
+        _ = try await db.save(record)
     }
 
     /// Lädt den gesamten Shop-Katalog hoch (alle Kategorien + Produkte + Bilder).
@@ -144,6 +215,8 @@ final class CloudKitManager: ObservableObject {
         }
 
         do {
+            _ = try requireDatabase()
+
             // 1. Kategorien hochladen
             let categoryRequest = NSFetchRequest<Category>(entityName: "Category")
             let categories = try store.context.fetch(categoryRequest)
@@ -181,15 +254,17 @@ final class CloudKitManager: ObservableObject {
 
     /// Lädt alle Kategorien aus CloudKit herunter und speichert sie lokal.
     func fetchCategories() async throws -> [CKRecord] {
+        let db = try requireDatabase()
         let query = CKQuery(recordType: RecordType.category.rawValue, predicate: NSPredicate(value: true))
         query.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
 
-        let (results, _) = try await publicDatabase.records(matching: query)
+        let (results, _) = try await db.records(matching: query)
         return results.compactMap { try? $0.1.get() }
     }
 
     /// Lädt alle Produkte einer Kategorie aus CloudKit.
     func fetchProducts(forCategory categoryRecordID: CKRecord.ID? = nil) async throws -> [CKRecord] {
+        let db = try requireDatabase()
         let predicate: NSPredicate
         if let categoryRecordID = categoryRecordID {
             let reference = CKRecord.Reference(recordID: categoryRecordID, action: .none)
@@ -201,18 +276,19 @@ final class CloudKitManager: ObservableObject {
         let query = CKQuery(recordType: RecordType.product.rawValue, predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
 
-        let (results, _) = try await publicDatabase.records(matching: query)
+        let (results, _) = try await db.records(matching: query)
         return results.compactMap { try? $0.1.get() }
     }
 
     /// Lädt die Bilder eines Produkts aus CloudKit.
     func fetchProductImages(forProduct productRecordID: CKRecord.ID) async throws -> [CKRecord] {
+        let db = try requireDatabase()
         let reference = CKRecord.Reference(recordID: productRecordID, action: .none)
         let predicate = NSPredicate(format: "product == %@", reference)
         let query = CKQuery(recordType: RecordType.productImage.rawValue, predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
 
-        let (results, _) = try await publicDatabase.records(matching: query)
+        let (results, _) = try await db.records(matching: query)
         return results.compactMap { try? $0.1.get() }
     }
 
@@ -289,6 +365,7 @@ final class CloudKitManager: ObservableObject {
 
     /// Registriert eine Subscription für neue Produkte, um Push-Notifications zu erhalten.
     func subscribeToNewProducts() async throws {
+        let db = try requireDatabase()
         let predicate = NSPredicate(value: true)
         let subscription = CKQuerySubscription(
             recordType: RecordType.product.rawValue,
@@ -303,7 +380,7 @@ final class CloudKitManager: ObservableObject {
         notificationInfo.soundName = "default"
         subscription.notificationInfo = notificationInfo
 
-        _ = try await publicDatabase.save(subscription)
+        _ = try await db.save(subscription)
     }
 
     // MARK: - Hilfsfunktionen

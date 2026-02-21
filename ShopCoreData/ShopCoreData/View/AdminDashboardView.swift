@@ -285,6 +285,9 @@ struct CloudKitStatusCard: View {
     @ObservedObject var cloudKitManager: CloudKitManager
 
     private var statusText: String {
+        if !cloudKitManager.isCloudKitConfigured {
+            return "Nicht konfiguriert"
+        }
         switch cloudKitManager.accountStatus {
         case .available: return "Verbunden"
         case .noAccount: return "Nicht angemeldet"
@@ -296,6 +299,9 @@ struct CloudKitStatusCard: View {
     }
 
     private var statusColor: Color {
+        if !cloudKitManager.isCloudKitConfigured {
+            return .mutedAmber
+        }
         switch cloudKitManager.accountStatus {
         case .available: return .galleryAvailable
         default: return .gallerySold
