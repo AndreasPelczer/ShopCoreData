@@ -27,23 +27,30 @@ struct CheckoutView: View {
                 VStack(spacing: 20) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 80))
-                        .foregroundColor(.green)
+                        .foregroundColor(.galleryAvailable)
 
                     Text("Bestellung aufgegeben!")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.galleryTitle)
+                        .foregroundColor(.softWhite)
 
                     Text("Deine Bestellung wurde aufgegeben. Dein Unikat wird sorgfältig verpackt.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                        .font(.galleryBody)
+                        .foregroundColor(.gallerySecondaryText)
                         .multilineTextAlignment(.center)
 
                     Button("Fertig") {
                         dismiss()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 12)
+                    .background(Color.smokyQuartz)
+                    .foregroundColor(.galleryBackground)
+                    .cornerRadius(10)
                 }
                 .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.galleryBackground)
             } else {
                 // Bestellübersicht
                 List {
@@ -52,15 +59,16 @@ struct CheckoutView: View {
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(item.product?.name ?? "")
-                                        .font(.body)
+                                        .font(.galleryBody)
+                                        .foregroundColor(.softWhite)
                                     if item.product?.isUnique == true {
                                         Text("Unikat")
-                                            .font(.caption)
-                                            .foregroundColor(.orange)
+                                            .font(.galleryCaption)
+                                            .foregroundColor(.mutedAmber)
                                     } else {
                                         Text("Menge: \(item.quantity)")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .font(.galleryCaption)
+                                            .foregroundColor(.gallerySecondaryText)
                                     }
                                 }
 
@@ -69,19 +77,23 @@ struct CheckoutView: View {
                                 let itemTotal = (item.product?.price ?? 0) * Double(item.quantity)
                                 Text(currencyFormatter.string(from: NSNumber(value: itemTotal)) ?? "")
                                     .fontWeight(.medium)
+                                    .foregroundColor(.softWhite)
                             }
+                            .listRowBackground(Color.galleryPanel)
                         }
                     }
 
                     Section {
                         HStack {
                             Text("Gesamt")
-                                .font(.headline)
+                                .font(.gallerySubtitle)
+                                .foregroundColor(.softWhite)
                             Spacer()
                             Text(currencyFormatter.string(from: NSNumber(value: cartViewModel.totalPrice)) ?? "")
-                                .font(.headline)
-                                .foregroundColor(.accentColor)
+                                .font(.gallerySubtitle)
+                                .foregroundColor(.smokyQuartz)
                         }
+                        .listRowBackground(Color.galleryPanel)
                     }
 
                     Section {
@@ -94,15 +106,18 @@ struct CheckoutView: View {
                                 Spacer()
                             }
                         }
-                        .foregroundColor(.white)
-                        .listRowBackground(Color.accentColor)
+                        .foregroundColor(.galleryBackground)
+                        .listRowBackground(Color.smokyQuartz)
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color.galleryBackground)
                 .navigationTitle("Bestellung")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Abbrechen") { dismiss() }
+                            .foregroundColor(.smokyQuartz)
                     }
                 }
             }

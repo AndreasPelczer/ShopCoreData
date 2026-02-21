@@ -31,21 +31,26 @@ struct OrderDetailView: View {
             Section("Bestelldetails") {
                 HStack {
                     Text("Datum")
+                        .foregroundColor(.gallerySecondaryText)
                     Spacer()
                     Text(dateFormatter.string(from: order.date ?? Date()))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.softWhite)
                 }
+                .listRowBackground(Color.galleryPanel)
 
                 HStack {
                     Text("Status")
+                        .foregroundColor(.gallerySecondaryText)
                     Spacer()
                     Text(order.status ?? "Unbekannt")
+                        .font(.galleryCaption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
-                        .background(Color.green.opacity(0.2))
-                        .foregroundColor(.green)
+                        .background(Color.oxidCopper.opacity(0.2))
+                        .foregroundColor(.oxidCopper)
                         .cornerRadius(4)
                 }
+                .listRowBackground(Color.galleryPanel)
             }
 
             Section("Produkte") {
@@ -53,15 +58,16 @@ struct OrderDetailView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(item.productName ?? "")
-                                .font(.body)
+                                .font(.galleryBody)
+                                .foregroundColor(.softWhite)
                             if item.quantity == 1 {
                                 Text("Unikat")
-                                    .font(.caption)
-                                    .foregroundColor(.orange)
+                                    .font(.galleryCaption)
+                                    .foregroundColor(.mutedAmber)
                             } else {
                                 Text("Menge: \(item.quantity)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .font(.galleryCaption)
+                                    .foregroundColor(.gallerySecondaryText)
                             }
                         }
 
@@ -71,27 +77,33 @@ struct OrderDetailView: View {
                         VStack(alignment: .trailing) {
                             Text(currencyFormatter.string(from: NSNumber(value: itemTotal)) ?? "")
                                 .fontWeight(.medium)
+                                .foregroundColor(.softWhite)
                             if item.quantity > 1 {
                                 Text("je \(currencyFormatter.string(from: NSNumber(value: item.priceAtPurchase)) ?? "")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .font(.galleryMonoSmall)
+                                    .foregroundColor(.gallerySecondaryText)
                             }
                         }
                     }
+                    .listRowBackground(Color.galleryPanel)
                 }
             }
 
             Section {
                 HStack {
                     Text("Gesamtbetrag")
-                        .font(.headline)
+                        .font(.gallerySubtitle)
+                        .foregroundColor(.softWhite)
                     Spacer()
                     Text(currencyFormatter.string(from: NSNumber(value: order.totalAmount)) ?? "")
-                        .font(.headline)
-                        .foregroundColor(.accentColor)
+                        .font(.gallerySubtitle)
+                        .foregroundColor(.smokyQuartz)
                 }
+                .listRowBackground(Color.galleryPanel)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.galleryBackground)
         .navigationTitle("Bestellung")
         .navigationBarTitleDisplayMode(.inline)
     }

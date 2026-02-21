@@ -26,14 +26,16 @@ struct ShoppingCartView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "cart")
                             .font(.system(size: 60))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.gallerySecondaryText)
                         Text("Dein Warenkorb ist leer")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
+                            .font(.gallerySubtitle)
+                            .foregroundColor(.gallerySecondaryText)
                         Text("Entdecke einzigartige Bongs in der Galerie.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.gallerySubheadline)
+                            .foregroundColor(.gallerySecondaryText)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.galleryBackground)
                 } else {
                     VStack(spacing: 0) {
                         List {
@@ -44,6 +46,7 @@ struct ShoppingCartView: View {
                                     onIncrease: { cartViewModel.increaseQuantity(cartItem: item) },
                                     onDecrease: { cartViewModel.decreaseQuantity(cartItem: item) }
                                 )
+                                .listRowBackground(Color.galleryBackground)
                             }
                             .onDelete { indexSet in
                                 for index in indexSet {
@@ -52,19 +55,23 @@ struct ShoppingCartView: View {
                             }
                         }
                         .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.galleryBackground)
 
                         // Gesamtpreis und Bestellen
                         VStack(spacing: 12) {
-                            Divider()
+                            Rectangle()
+                                .fill(Color.galleryDivider)
+                                .frame(height: 1)
 
                             HStack {
                                 Text("Gesamt (\(cartViewModel.totalItemCount) \(cartViewModel.totalItemCount == 1 ? "Stück" : "Stücke"))")
-                                    .font(.body)
+                                    .font(.galleryBody)
+                                    .foregroundColor(.softWhite)
                                 Spacer()
                                 Text(currencyFormatter.string(from: NSNumber(value: cartViewModel.totalPrice)) ?? "")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.accentColor)
+                                    .font(.gallerySubtitle)
+                                    .foregroundColor(.smokyQuartz)
                             }
                             .padding(.horizontal)
 
@@ -76,17 +83,18 @@ struct ShoppingCartView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.accentColor)
-                                .foregroundColor(.white)
+                                .background(Color.smokyQuartz)
+                                .foregroundColor(.galleryBackground)
                                 .cornerRadius(12)
                             }
                             .padding(.horizontal)
                             .padding(.bottom)
                         }
-                        .background(Color(.systemBackground))
+                        .background(Color.galleryPanel)
                     }
                 }
             }
+            .background(Color.galleryBackground)
             .navigationTitle("Warenkorb")
             .sheet(isPresented: $showCheckout) {
                 CheckoutView(cartViewModel: cartViewModel, orderViewModel: orderViewModel)
@@ -116,32 +124,33 @@ struct CartItemRow: View {
         HStack(spacing: 12) {
             Image(systemName: item.product?.imageName ?? "shippingbox")
                 .font(.title3)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.smokyQuartz)
                 .frame(width: 44, height: 44)
-                .background(Color(.systemGray6))
+                .background(Color.galleryPanel)
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(item.product?.name ?? "")
-                        .font(.body)
+                        .font(.galleryBody)
                         .fontWeight(.medium)
+                        .foregroundColor(.softWhite)
 
                     if item.product?.isUnique == true {
                         Text("UNIKAT")
                             .font(.system(size: 8, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(.galleryBackground)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)
-                            .background(Color.orange)
+                            .background(Color.mutedAmber)
                             .cornerRadius(2)
                     }
                 }
 
                 let itemTotal = (item.product?.price ?? 0) * Double(item.quantity)
                 Text(currencyFormatter.string(from: NSNumber(value: itemTotal)) ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(.accentColor)
+                    .font(.gallerySubheadline)
+                    .foregroundColor(.smokyQuartz)
             }
 
             Spacer()
@@ -151,7 +160,7 @@ struct CartItemRow: View {
                 Button(action: onDecrease) {
                     Image(systemName: "trash")
                         .font(.body)
-                        .foregroundColor(.red)
+                        .foregroundColor(.gallerySold)
                 }
             } else {
                 // Mengensteuerung für Nicht-Unikate
@@ -162,8 +171,9 @@ struct CartItemRow: View {
                     }
 
                     Text("\(item.quantity)")
-                        .font(.body)
+                        .font(.galleryBody)
                         .fontWeight(.medium)
+                        .foregroundColor(.softWhite)
                         .frame(minWidth: 24)
 
                     Button(action: onIncrease) {
@@ -172,7 +182,7 @@ struct CartItemRow: View {
                     }
                     .disabled(item.product?.quantity ?? 0 <= 0)
                 }
-                .foregroundColor(.accentColor)
+                .foregroundColor(.smokyQuartz)
             }
         }
         .padding(.vertical, 4)

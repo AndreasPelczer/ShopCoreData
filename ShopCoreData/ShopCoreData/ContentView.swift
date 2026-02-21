@@ -33,6 +33,7 @@ struct ContentView: View {
                     Text("Bestellungen")
                 }
         }
+        .tint(.smokyQuartz)
     }
 }
 
